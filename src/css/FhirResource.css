@@ -1,0 +1,82 @@
+.fhir-resource {
+  border-top: 1px solid #ccc;
+  padding-top: 30px;
+  margin-top: -8px;
+}
+
+.fhir-resource .title,
+.fhir-resource .url,
+.fhir-resource .version {
+  margin: 0 16px 6px;
+}
+
+.fhir-resource .url,
+.fhir-resource .version {
+  font-size: 14px;
+  font-family: monospace;
+  font-weight: normal;
+}
+
+.fhir-resource .title {
+  margin-bottom: 10px;
+}
+
+.fhir-resource .url a {
+  color: black;
+  text-decoration: none;
+}
+.fhir-resource .url a:hover {
+  text-decoration: underline;
+}
+
+.fhir-resource code {
+  font-size: 13px;
+  background-color: transparent;
+}
+
+.fhir-resource nav {
+  border-bottom: 1px solid #ccc;
+  margin: 30px 0;
+}
+
+.fhir-resource ol {
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+.fhir-resource li {
+  border-width: 1px 1px 0;
+  border-color: #ccc;
+  border-style: solid;
+  background: linear-gradient(0deg, #eee, white);
+  padding: 8px 12px;
+  list-style-type: none;
+  margin: 0 3px;
+  border-radius: 6px 6px 0 0;
+  font-size: 14px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.5s;
+}
+
+.fhir-resource li.active,
+.fhir-resource li:hover {
+  opacity: 1;
+}
+
+.fhir-resource .tab-content {
+  margin: 0 10px 30px;
+}
+
+.fhir-resource .tab-content-hidden {
+  display: none;
+}
+
+.fhir-resource .error {
+  background-color: #fff1dd;
+  border: 1px solid #ff7600;
+  border-radius: 6px;
+  padding: 15px 18px;
+  font-size: 14px;
+}

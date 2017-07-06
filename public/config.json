@@ -1,0 +1,4 @@
+{
+  "fhirServer": "http://ontoserver.csiro.au/stu3-latest",
+  "narrativeStyles": "/agency-narrative.css"
+}

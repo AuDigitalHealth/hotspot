@@ -1,0 +1,12 @@
+.narrative {
+  font-size: 14px;
+}
+
+.narrative table {
+  margin: 20px 0;
+}
+
+.narrative td {
+  border: 1px solid #ccc;
+  padding: 4px 6px;
+}

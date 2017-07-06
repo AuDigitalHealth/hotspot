@@ -1,0 +1,39 @@
+{
+  "parser": "babel-eslint",
+  "plugins": [
+    "jest"
+  ],
+  "env": {
+    "browser": true,
+    "node": true,
+    "jest": true
+  },
+  "globals": {
+    "Promise": false,
+    "React$Element": false,
+    "Generator": false,
+    "onmessage": true,
+    "postMessage": false
+  },
+  "settings": {
+    "ecmascript": 6,
+    "jsx": true
+  },
+  "extends": [ "standard", "standard-react" ],
+  "rules": {
+    "react/jsx-indent": 0,
+    "react/prop-types": 0,
+    "react/no-unused-prop-types": 0,
+    "space-before-function-paren": ["error", "never"],
+    "no-duplicate-imports": 0,
+    "no-return-assign": 0,
+    "object-property-newline": 0,
+    "prefer-const": ["error"],
+    "comma-dangle": ["error", "always-multiline"],
+    "no-var": ["error"],
+    "array-bracket-spacing": ["error", "always", { "singleValue": false }],
+    "jest/no-disabled-tests": "error",
+    "jest/no-focused-tests": "error",
+    "jest/valid-expect": "error"
+  }
+}
