@@ -6,6 +6,13 @@ import _ from 'lodash'
 // Renders the XHTML narrative content from a FHIR resource, optionally
 // applying a custom stylesheet.
 class Narrative extends Component {
+  static propTypes = {
+    content: PropTypes.string.isRequired,
+    fhirServer: PropTypes.string.isRequired,
+    stylesPath: PropTypes.string,
+    onError: PropTypes.func,
+  }
+
   constructor(props) {
     super(props)
     const state = {}
@@ -113,6 +120,14 @@ class Narrative extends Component {
     }
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return (
+      this.props.content !== nextProps.content ||
+      this.props.sanitizedContent !== nextState.sanitizedContent ||
+      this.props.styles !== nextState.styles
+    )
+  }
+
   render() {
     const { sanitizedContent, styles } = this.state
 
@@ -139,13 +154,6 @@ class Narrative extends Component {
       </div>
     )
   }
-}
-
-Narrative.propTypes = {
-  content: PropTypes.string.isRequired,
-  fhirServer: PropTypes.string.isRequired,
-  stylesPath: PropTypes.string,
-  onError: PropTypes.func,
 }
 
 export default Narrative

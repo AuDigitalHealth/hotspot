@@ -7,6 +7,12 @@ import 'highlight.js/styles/docco.css'
 // Renders the raw content of an XML or JSON FHIR resource, pretty-printed and
 // with syntax highlighting.
 class Raw extends Component {
+  static propTypes = {
+    content: PropTypes.string.isRequired,
+    format: PropTypes.oneOf([ 'json', 'xml' ]).isRequired,
+    onError: PropTypes.func,
+  }
+
   constructor(props) {
     super(props)
     this.state = {}
@@ -39,6 +45,14 @@ class Raw extends Component {
         }
       }
     }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return (
+      this.props.content !== nextProps.content ||
+      this.props.format !== nextProps.format ||
+      this.state.prettyContent !== nextState.prettyContent
+    )
   }
 
   render() {
@@ -87,12 +101,6 @@ class Raw extends Component {
 
     return new XMLSerializer().serializeToString(transformed)
   }
-}
-
-Raw.propTypes = {
-  content: PropTypes.string.isRequired,
-  format: PropTypes.oneOf([ 'json', 'xml' ]).isRequired,
-  onError: PropTypes.func,
 }
 
 export default Raw

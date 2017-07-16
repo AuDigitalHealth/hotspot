@@ -9,6 +9,16 @@ import './css/FhirResource.css'
 // A component that presents a human-friendly representation of an XML or JSON
 // FHIR resource, including Narrative and Raw tabs.
 class FhirResource extends Component {
+  static propTypes = {
+    path: PropTypes.string.isRequired,
+    query: PropTypes.string.isRequired,
+    config: PropTypes.shape({
+      fhirServer: PropTypes.string.isRequired,
+      narrativeStyles: PropTypes.string,
+      requestMode: PropTypes.string,
+    }),
+  }
+
   constructor(props) {
     super(props)
     this.state = {
@@ -78,6 +88,22 @@ class FhirResource extends Component {
     if (title !== prevState.title || version !== prevState.version) {
       document.title = version ? `${title} (${version})` : title
     }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return (
+      this.props.path !== nextProps.path ||
+      this.props.query !== nextProps.query ||
+      this.state.status !== nextState.status ||
+      this.state.format !== nextState.format ||
+      this.state.narrative !== nextState.narrative ||
+      this.state.raw !== nextState.raw ||
+      this.state.activeTab !== nextState.activeTab ||
+      this.state.title !== nextState.title ||
+      this.state.url !== nextState.url ||
+      this.state.version !== nextState.version ||
+      this.state.error !== nextState.error
+    )
   }
 
   render() {
@@ -269,16 +295,6 @@ class FhirResource extends Component {
       )
     }
   }
-}
-
-FhirResource.propTypes = {
-  path: PropTypes.string.isRequired,
-  query: PropTypes.string.isRequired,
-  config: PropTypes.shape({
-    fhirServer: PropTypes.string.isRequired,
-    narrativeStyles: PropTypes.string,
-    requestMode: PropTypes.string,
-  }),
 }
 
 export default FhirResource

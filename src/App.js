@@ -7,6 +7,10 @@ import csiroLogo from './img/csiro.svg'
 import './css/App.css'
 
 class App extends Component {
+  shouldComponentUpdate(nextProps, nextState) {
+    return false
+  }
+
   render() {
     const { config } = this.props
 
@@ -14,23 +18,42 @@ class App extends Component {
       <div className='app'>
         <header>
           <a href='https://www.digitalhealth.gov.au/'>
-            <img src={agencyLogo} height='70' className='agency' alt='Australian Digital Health Agency' />
+            <img
+              src={agencyLogo}
+              height='70'
+              className='agency'
+              alt='Australian Digital Health Agency'
+            />
           </a>
           <a href='https://www.csiro.au/'>
             <img src={csiroLogo} height='70' className='csiro' alt='CSIRO' />
           </a>
-          <h1><a href='https://www.healthterminologies.gov.au/'>National Clinical Terminology Service</a></h1>
+          <h1>
+            <a href='https://www.healthterminologies.gov.au/'>
+              National Clinical Terminology Service
+            </a>
+          </h1>
         </header>
         <Router>
           <Switch>
-            <Route path='/:path' render={({ location }) => (
-              <FhirResource path={location.pathname} query={location.search} {...config} />
-            )} />
-            <Route render={() => (
-              <div className='fhir-resource'>
-                <p>Please provide a path to a valid FHIR resource within the URL.</p>
-              </div>
-            )} />
+            <Route
+              path='/:path'
+              render={({ location }) =>
+                <FhirResource
+                  path={location.pathname}
+                  query={location.search}
+                  {...config}
+                />}
+            />
+            <Route
+              render={() =>
+                <div className='fhir-resource'>
+                  <p>
+                    Please provide a path to a valid FHIR resource within the
+                    URL.
+                  </p>
+                </div>}
+            />
           </Switch>
         </Router>
       </div>
