@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import Highlight from 'react-highlight'
 
 import 'highlight.js/styles/docco.css'
@@ -9,16 +10,33 @@ class Raw extends Component {
   constructor(props) {
     super(props)
     this.state = {}
+    if (props.content && props.format) {
+      try {
+        this.state = {
+          ...this.state,
+          prettyContent: Raw.prettifyContent(props.content, props.format),
+        }
+      } catch (error) {
+        if (props.onError) {
+          props.onError(error)
+        }
+      }
+    }
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.content && nextProps.format) {
       try {
         this.setState(() => ({
-          prettyContent: Raw.prettifyContent(nextProps.content, nextProps.format),
+          prettyContent: Raw.prettifyContent(
+            nextProps.content,
+            nextProps.format
+          ),
         }))
       } catch (error) {
-        this.props.onError(error)
+        if (this.props.onError) {
+          this.props.onError(error)
+        }
       }
     }
   }
@@ -27,9 +45,13 @@ class Raw extends Component {
     const { format } = this.props
     const { prettyContent } = this.state
 
-    return <div className='raw'>
-      <Highlight className={format}>{prettyContent}</Highlight>
-    </div>
+    return (
+      <div className='raw'>
+        <Highlight className={format}>
+          {prettyContent}
+        </Highlight>
+      </div>
+    )
   }
 
   static prettifyContent(content, format) {
@@ -65,6 +87,12 @@ class Raw extends Component {
 
     return new XMLSerializer().serializeToString(transformed)
   }
+}
+
+Raw.propTypes = {
+  content: PropTypes.string.isRequired,
+  format: PropTypes.oneOf([ 'json', 'xml' ]).isRequired,
+  onError: PropTypes.func,
 }
 
 export default Raw
