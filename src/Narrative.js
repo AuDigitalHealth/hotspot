@@ -9,11 +9,13 @@ class Narrative extends Component {
   constructor(props) {
     super(props)
     const state = {}
-    if (this.props.content) {
+    if (props.content) {
       try {
         state.sanitizedContent = this.sanitizeContent(props.content)
       } catch (error) {
-        this.props.onError(error)
+        if (props.onError) {
+          props.onError(error)
+        }
       }
     }
     this.state = state
@@ -35,7 +37,9 @@ class Narrative extends Component {
       const styles = await response.text()
       this.setState(() => ({ styles }))
     } catch (error) {
-      this.props.onError(error)
+      if (this.props.onError) {
+        this.props.onError(error)
+      }
     }
   }
 
@@ -60,9 +64,7 @@ class Narrative extends Component {
         // Filter out event-related attributes.
         '*': (tagName, attribs) => ({
           tagName,
-          attribs: _.omit(attribs, (_, key) => {
-            key.match(/^on.+/)
-          }),
+          attribs: _.omitBy(attribs, (_, key) => key.match(/^on.+/)),
         }),
         // Translate any relative hrefs within anchors.
         a: (tagName, attribs) => ({
