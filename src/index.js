@@ -13,8 +13,8 @@ fetch('/config.json').then(response => response.text()).then(rawConfig => {
       console.error('Missing fhirServer value in config.')
     }
     ReactDOM.render(<App config={config} />, document.getElementById('root'))
-    registerServiceWorker()
   } catch (error) {
     console.error(error)
   }
 })
+registerServiceWorker()
