@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 
 import Narrative from './Narrative.js'
 import Raw from './Raw.js'
@@ -23,7 +24,7 @@ class FhirResource extends Component {
 
     try {
       const response = await fetch(fhirServer + path + query, {
-        mode: requestMode,
+        mode: requestMode || 'cors',
         redirect: 'follow',
       })
       if (!response.ok) {
@@ -268,6 +269,16 @@ class FhirResource extends Component {
       )
     }
   }
+}
+
+FhirResource.propTypes = {
+  path: PropTypes.string.isRequired,
+  query: PropTypes.string.isRequired,
+  config: PropTypes.shape({
+    fhirServer: PropTypes.string.isRequired,
+    narrativeStyles: PropTypes.string,
+    requestMode: PropTypes.string,
+  }),
 }
 
 export default FhirResource
