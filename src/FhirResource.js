@@ -12,11 +12,9 @@ class FhirResource extends Component {
   static propTypes = {
     path: PropTypes.string.isRequired,
     query: PropTypes.string.isRequired,
-    config: PropTypes.shape({
-      fhirServer: PropTypes.string.isRequired,
-      narrativeStyles: PropTypes.string,
-      requestMode: PropTypes.string,
-    }),
+    fhirServer: PropTypes.string.isRequired,
+    narrativeStyles: PropTypes.string,
+    requestMode: PropTypes.string,
   }
 
   constructor(props) {
@@ -25,37 +23,63 @@ class FhirResource extends Component {
       status: 'loading',
       activeTab: 'narrative',
     }
-
     this.handleError = this.handleError.bind(this)
   }
 
-  async getResource() {
-    const { fhirServer, path, query, requestMode } = this.props
+  updateResource(props) {
+    return this.setState(
+      () => ({ status: 'loading' }),
+      () =>
+        this.getResource(props)
+          .then(resource => this.extractMetadata(resource))
+          .then(resource => this.updatePageTitle(resource))
+          .then(resource => this.updateActiveTab(resource))
+          .then(resource => this.setState({ ...resource, status: 'loaded' }))
+          .catch(error => this.handleError(error))
+    )
+  }
 
-    try {
-      const response = await fetch(fhirServer + path + query, {
-        mode: requestMode || 'cors',
-        redirect: 'follow',
-      })
-      if (!response.ok) {
-        this.handleUnsuccessfulResponse(response)
-      }
-      const responseText = await response.text()
-      const format = FhirResource.sniffFormat(
-        response.headers.get('Content-Type')
-      )
-      this.setState(() => ({ raw: responseText, format }))
-      const metadata = await FhirResource.extractMetadata(responseText, format)
-      this.setState(() => metadata, () => this.setState({ status: 'loaded' }))
-    } catch (error) {
-      this.handleError(
-        new Error(
-          error.message
-            ? `There was a problem reaching the FHIR server: "${error.message}"`
-            : 'There was a problem reaching the FHIR server.'
-        ),
-        error
-      )
+  async getResource(props) {
+    const { fhirServer, path, query, requestMode } = props
+    const response = await fetch(fhirServer + path + query, {
+      mode: requestMode || 'cors',
+      redirect: 'follow',
+    })
+    if (!response.ok) {
+      this.handleUnsuccessfulResponse(response)
+    }
+    const responseText = await response.text()
+    const format = FhirResource.sniffFormat(
+      response.headers.get('Content-Type')
+    )
+    return { raw: responseText, format }
+  }
+
+  async extractMetadata(resource) {
+    if (resource.format === 'json') {
+      const metadata = await FhirResource.extractJSONMetadata(resource.raw)
+      return { ...resource, ...metadata }
+    } else if (resource.format === 'xml') {
+      const metadata = await FhirResource.extractXMLMetadata(resource.raw)
+      return { ...resource, ...metadata }
+    } else {
+      throw new Error('Unsupported content type.')
+    }
+  }
+
+  async updatePageTitle(resource) {
+    const { title, version } = resource
+    document.title = version ? `${title} (${version})` : title
+    return resource
+  }
+
+  async updateActiveTab(resource) {
+    return {
+      ...resource,
+      activeTab:
+        this.state.activeTab === 'narrative' && !resource.narrative
+          ? 'raw'
+          : this.state.activeTab,
     }
   }
 
@@ -63,31 +87,26 @@ class FhirResource extends Component {
     this.setState(() => ({ activeTab: tabName }))
   }
 
-  handleError(error, originalError) {
-    console.error(originalError || error)
+  handleError(error) {
     this.setState(() => ({ error, status: 'error' }))
   }
 
   handleUnsuccessfulResponse(response) {
     if (response.status === 404) {
-      throw Error(
+      throw new Error(
         `The resource you requested was not found: "${this.props.path}"`
       )
     } else {
-      throw Error(response.statusText)
+      throw new Error(response.statusText)
     }
   }
 
-  componentDidMount() {
-    this.setState(() => ({ status: 'loading' }), () => this.getResource())
+  componentWillMount() {
+    this.updateResource(this.props)
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const { title, version } = this.state
-
-    if (title !== prevState.title || version !== prevState.version) {
-      document.title = version ? `${title} (${version})` : title
-    }
+  componentWillReceiveProps(nextProps) {
+    this.updateResource(nextProps)
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -109,25 +128,7 @@ class FhirResource extends Component {
   render() {
     const { fhirServer, narrativeStyles } = this.props
     const { status, format, narrative, raw, activeTab, error } = this.state
-    let { title, url, version } = this.state
-
-    title = title
-      ? <h2 className='title'>
-          {title}
-        </h2>
-      : null
-    url = url
-      ? <h3 className='url'>
-          <a href={url}>
-            {url}
-          </a>
-        </h3>
-      : null
-    version = version
-      ? <h3 className='version'>
-          {version}
-        </h3>
-      : null
+    const { title, url, version } = this.state
 
     switch (status) {
       case 'loading':
@@ -139,17 +140,41 @@ class FhirResource extends Component {
       case 'loaded':
         return (
           <div className='fhir-resource'>
-            {title}
-            {url}
-            {version}
+            {title
+              ? <h2 className='title'>
+                  {title}
+                </h2>
+              : null}
+            <dl className='metadata'>
+              {url
+                ? <div>
+                    <dt className='url'>URI</dt>
+                    <dd>
+                      <a href={url}>
+                        {url}
+                      </a>
+                    </dd>
+                  </div>
+                : null}
+              {version
+                ? <div>
+                    <dt className='version'>Version</dt>
+                    <dd>
+                      {version}
+                    </dd>
+                  </div>
+                : null}
+            </dl>
             <nav>
               <ol>
-                <li
-                  onClick={() => this.setActiveTab('narrative')}
-                  className={activeTab === 'narrative' ? 'active' : ''}
-                >
-                  Narrative
-                </li>
+                {narrative
+                  ? <li
+                    onClick={() => this.setActiveTab('narrative')}
+                    className={activeTab === 'narrative' ? 'active' : ''}
+                    >
+                      Narrative
+                    </li>
+                  : null}
                 <li
                   onClick={() => this.setActiveTab('raw')}
                   className={activeTab === 'raw' ? 'active' : ''}
@@ -158,20 +183,22 @@ class FhirResource extends Component {
                 </li>
               </ol>
             </nav>
-            <section
-              className={
-                activeTab === 'narrative'
-                  ? 'tab-content'
-                  : 'tab-content tab-content-hidden'
-              }
-            >
-              <Narrative
-                content={narrative}
-                stylesPath={narrativeStyles}
-                fhirServer={fhirServer}
-                onError={this.handleError}
-              />
-            </section>
+            {narrative
+              ? <section
+                className={
+                    activeTab === 'narrative'
+                      ? 'tab-content'
+                      : 'tab-content tab-content-hidden'
+                  }
+                >
+                  <Narrative
+                    content={narrative}
+                    stylesPath={narrativeStyles}
+                    fhirServer={fhirServer}
+                    onError={this.handleError}
+                  />
+                </section>
+              : null}
             <section
               className={
                 activeTab === 'raw'
@@ -223,23 +250,14 @@ class FhirResource extends Component {
     }
   }
 
-  static extractMetadata(raw, format) {
-    return new Promise((resolve, reject) => {
-      if (format === 'json') {
-        FhirResource.extractJSONMetadata(raw, resolve, reject)
-      } else if (format === 'xml') {
-        FhirResource.extractXMLMetadata(raw, resolve, reject)
-      } else {
-        reject(new Error('Unsupported content type.'))
-      }
-    })
-  }
-
-  static extractJSONMetadata(raw, resolve, reject) {
+  static async extractJSONMetadata(raw) {
     try {
       const parsed = JSON.parse(raw)
       const metadata = {}
-      // Prefer name over title, as it is supposed to be the more human-readable.
+      // Prefer title over name over resource type.
+      if (parsed.resourceType) {
+        metadata.title = parsed.resourceType
+      }
       if (parsed.name) {
         metadata.title = parsed.name
       }
@@ -255,43 +273,42 @@ class FhirResource extends Component {
       if (parsed.text && parsed.text.div) {
         metadata.narrative = parsed.text.div
       }
-      resolve(metadata)
+      return metadata
     } catch (error) {
-      reject(
-        new Error(
-          `There was a problem parsing the JSON FHIR resource: "${error.message}"`
-        )
+      throw new Error(
+        `There was a problem parsing the JSON FHIR resource: "${error.message}"`
       )
     }
   }
 
-  static extractXMLMetadata(raw, resolve, reject) {
+  static async extractXMLMetadata(raw) {
     try {
       const parser = new DOMParser()
       const doc = parser.parseFromString(raw, 'application/xml')
       const metadata = {}
-      // Prefer name over title, as it is supposed to be the more human-readable.
-      const name = doc.querySelector('name')
-      const title = doc.querySelector('title')
+      // Prefer title over name over resource type.
+      const resource = doc.querySelector(':root')
+      const name = doc.querySelector(':root > name')
+      const title = doc.querySelector(':root > title')
       metadata.title = title
         ? title.getAttribute('value')
-        : name ? name.getAttribute('value') : undefined
-      const url = doc.querySelector('url')
+        : name
+          ? name.getAttribute('value')
+          : resource ? resource.nodeName : undefined
+      const url = doc.querySelector(':root > url')
       metadata.url = url ? url.getAttribute('value') : undefined
-      const version = doc.querySelector('version')
+      const version = doc.querySelector(':root > version')
       metadata.version = version ? version.getAttribute('value') : undefined
-      const narrative = doc.querySelector('text div')
+      const narrative = doc.querySelector(':root > text div')
       // Serialize the narrative XML back out to a plain string.
       if (narrative) {
         const serializer = new XMLSerializer()
         metadata.narrative = serializer.serializeToString(narrative)
       }
-      resolve(metadata)
+      return metadata
     } catch (error) {
-      reject(
-        new Error(
-          `There was a problem parsing the XML FHIR resource: "${error.message}"`
-        )
+      throw new Error(
+        `There was a problem parsing the XML FHIR resource: "${error.message}"`
       )
     }
   }

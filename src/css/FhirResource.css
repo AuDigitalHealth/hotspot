@@ -10,23 +10,39 @@
   margin: 0 16px 6px;
 }
 
-.fhir-resource .url,
-.fhir-resource .version {
+.fhir-resource > .metadata {
   font-size: 14px;
-  font-family: monospace;
   font-weight: normal;
 }
 
-.fhir-resource .title {
+.fhir-resource > .metadata div {
+  display: flex;
+  align-items: baseline;
+}
+
+.fhir-resource > .metadata dt {
+  width: 30px;
+  font-size: 13px;
+}
+
+.fhir-resource > .metadata dd {
+  font-family: monospace;
+}
+
+.fhir-resource > .metadata .title {
   margin-bottom: 10px;
 }
 
-.fhir-resource .url a {
+.fhir-resource > .metadata dd a {
   color: black;
   text-decoration: none;
 }
-.fhir-resource .url a:hover {
+.fhir-resource dd a:hover {
   text-decoration: underline;
+}
+
+.fhir-resource .version code {
+  font-family: monospace;
 }
 
 .fhir-resource code {
@@ -40,7 +56,7 @@
 }
 
 .fhir-resource ol {
-  margin: 0;
+  margin: 0 11px;
   padding: 0;
   display: flex;
 }
