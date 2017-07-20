@@ -33,6 +33,6 @@ describe('FhirResource', () => {
     })
   }
 
-  // Can't currently test XML resources, due to the last of a level 3
+  // Can't currently test XML resources, due to the lack of a level 3
   // implementaton of the W3C DOM API in Node.
 })

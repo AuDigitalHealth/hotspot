@@ -9,7 +9,8 @@
     "react-highlight": "^0.10.0",
     "react-router-dom": "^4.1.1",
     "react-scripts": "1.0.10",
-    "sanitize-html": "^1.14.1"
+    "sanitize-html": "^1.14.1",
+    "vkbeautify": "^0.99.2"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -28,11 +29,17 @@
     "eslint-plugin-node": "^5.1.0",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1",
+    "pre-commit": "^1.2.2",
     "react-test-renderer": "^15.6.1",
     "xmldom": "^0.1.27"
   },
   "jest": {
-    "snapshotSerializers": ["enzyme-to-json/serializer"]
+    "snapshotSerializers": [
+      "enzyme-to-json/serializer"
+    ]
   },
-  "pre-commit": ["lint", "test-ci"]
+  "pre-commit": [
+    "lint",
+    "test-ci"
+  ]
 }

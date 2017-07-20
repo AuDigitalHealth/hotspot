@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Highlight from 'react-highlight'
+import beautify from 'vkbeautify'
 
 import 'highlight.js/styles/docco.css'
 
@@ -83,23 +84,7 @@ class Raw extends Component {
   }
 
   static prettifyXMLContent(content) {
-    const xslt = `<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
- <xsl:output omit-xml-declaration="yes" indent="yes"/>
-    <xsl:template match="node()|@*">
-      <xsl:copy>
-        <xsl:apply-templates select="node()|@*"/>
-      </xsl:copy>
-    </xsl:template>
-</xsl:stylesheet>`
-
-    const parser = new DOMParser()
-    const xsltDoc = parser.parseFromString(xslt, 'application/xml')
-    const xmlDoc = parser.parseFromString(content, 'application/xml')
-    const processor = new XSLTProcessor()
-    processor.importStylesheet(xsltDoc)
-    const transformed = processor.transformToDocument(xmlDoc)
-
-    return new XMLSerializer().serializeToString(transformed)
+    return beautify.xml(content, 4)
   }
 }
 
