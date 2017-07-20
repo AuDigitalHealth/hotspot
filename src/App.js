@@ -24,13 +24,12 @@ class App extends Component {
           <a href='https://www.digitalhealth.gov.au/'>
             <img
               src={agencyLogo}
-              height='70'
               className='agency'
               alt='Australian Digital Health Agency'
             />
           </a>
           <a href='https://www.csiro.au/'>
-            <img src={csiroLogo} height='70' className='csiro' alt='CSIRO' />
+            <img src={csiroLogo} className='csiro' alt='CSIRO' />
           </a>
           <h1>
             <a href='https://www.healthterminologies.gov.au/'>

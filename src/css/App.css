@@ -1,6 +1,7 @@
-.app header {
-  display: flex;
-  margin-bottom: 40px;
+.app header a,
+.app header h1 {
+  float: left;
+  margin-bottom: 30px;
 }
 
 .app header img.agency {
