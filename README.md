@@ -36,8 +36,3 @@ http://ontoserver.csiro.au/stu3-latest/CodeSystem/some-code-system.
 
 `narrativeStyles`: A URL to a custom stylesheet to override styles within
 narrative content.
-
-`requestMode`: `cors`, `no-cors` or `same-origin`. This is the request mode used
-by the [Fetch
-API](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch#Parameters)
-to request the FHIR resource.
