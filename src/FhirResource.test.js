@@ -27,7 +27,8 @@ describe('FhirResource', () => {
   for (const resource of jsonResources) {
     it(`should extract correct metadata for ${resource[0]}`, async () => {
       const raw = fs.readFileSync('test/' + resource[0], { encoding: 'utf-8' })
-      return FhirResource.extractJSONMetadata(raw).then(metadata => {
+      const parsed = JSON.parse(raw)
+      return FhirResource.extractJSONMetadata(parsed).then(metadata => {
         expect(_.pick(metadata, 'title', 'url', 'version')).toEqual(resource[1])
       })
     })

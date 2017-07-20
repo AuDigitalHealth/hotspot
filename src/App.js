@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import FhirResource from './FhirResource.js'
 
@@ -7,6 +8,9 @@ import csiroLogo from './img/csiro.svg'
 import './css/App.css'
 
 class App extends Component {
+  static propTypes = {
+    config: PropTypes.object,
+  }
   shouldComponentUpdate(nextProps, nextState) {
     return false
   }

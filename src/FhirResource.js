@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import http from 'axios'
 
 import Narrative from './Narrative.js'
 import Raw from './Raw.js'
@@ -14,7 +15,6 @@ class FhirResource extends Component {
     query: PropTypes.string.isRequired,
     fhirServer: PropTypes.string.isRequired,
     narrativeStyles: PropTypes.string,
-    requestMode: PropTypes.string,
   }
 
   constructor(props) {
@@ -40,24 +40,16 @@ class FhirResource extends Component {
   }
 
   async getResource(props) {
-    const { fhirServer, path, query, requestMode } = props
-    const response = await fetch(fhirServer + path + query, {
-      mode: requestMode || 'cors',
-      redirect: 'follow',
-    })
-    if (!response.ok) {
-      this.handleUnsuccessfulResponse(response)
-    }
-    const responseText = await response.text()
-    const format = FhirResource.sniffFormat(
-      response.headers.get('Content-Type')
-    )
-    return { raw: responseText, format }
+    const { fhirServer, path, query } = props
+    const response = await http.get(fhirServer + path + query)
+    const format = FhirResource.sniffFormat(response.headers['content-type'])
+    const parsed = format === 'json' ? { parsed: response.data } : {}
+    return { raw: response.request.responseText, format, ...parsed }
   }
 
   async extractMetadata(resource) {
     if (resource.format === 'json') {
-      const metadata = await FhirResource.extractJSONMetadata(resource.raw)
+      const metadata = await FhirResource.extractJSONMetadata(resource.parsed)
       return { ...resource, ...metadata }
     } else if (resource.format === 'xml') {
       const metadata = await FhirResource.extractXMLMetadata(resource.raw)
@@ -250,9 +242,8 @@ class FhirResource extends Component {
     }
   }
 
-  static async extractJSONMetadata(raw) {
+  static async extractJSONMetadata(parsed) {
     try {
-      const parsed = JSON.parse(raw)
       const metadata = {}
       // Prefer title over name over resource type.
       if (parsed.resourceType) {

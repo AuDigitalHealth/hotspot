@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import sanitize from 'sanitize-html'
+import http from 'axios'
 import _ from 'lodash'
 
 // Renders the XHTML narrative content from a FHIR resource, optionally
@@ -30,31 +31,18 @@ class Narrative extends Component {
 
   async getStyles() {
     try {
-      const response = await fetch(this.props.stylesPath)
-      if (!response.ok) {
-        this.handleUnsuccessfulResponse(response)
-      }
-      const contentType = response.headers.get('Content-Type')
+      const response = await http.get(this.props.stylesPath)
+      const contentType = response.headers['content-type']
       // Check that the Content-Type of the stylesheet response is `text/css`.
       if (!contentType.match(/text\/css/)) {
         throw Error(
           `Narrative stylesheet had unexpected format: "${contentType}"`
         )
       }
-      const styles = await response.text()
+      const styles = response.data
       this.setState(() => ({ styles }))
     } catch (error) {
-      if (this.props.onError) {
-        this.props.onError(error)
-      }
-    }
-  }
-
-  handleUnsuccessfulResponse(response) {
-    if (response.status === 404) {
-      throw Error(`Narrative stylesheet not found: "${this.props.stylesPath}"`)
-    } else {
-      throw Error(response.statusText)
+      throw Error(`Narrative stylesheet not found: "${error.toString()}"`)
     }
   }
 
@@ -104,7 +92,11 @@ class Narrative extends Component {
 
   componentDidMount() {
     if (this.props.stylesPath) {
-      this.getStyles()
+      this.getStyles().catch(error => {
+        if (this.props.onError) {
+          this.props.onError(error)
+        }
+      })
     }
   }
 
