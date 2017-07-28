@@ -11,6 +11,14 @@ class App extends Component {
   static propTypes = {
     config: PropTypes.object,
   }
+
+  static defaultProps = {
+    config: {
+      fhirServer: 'https://ontoserver.csiro.au/stu3-latest',
+      fhirVersion: '3.0.1',
+    },
+  }
+
   shouldComponentUpdate(nextProps, nextState) {
     return false
   }

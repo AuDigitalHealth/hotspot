@@ -11,9 +11,6 @@ http
   .get('/config.json')
   .then(response => {
     const config = response.data
-    if (typeof config.fhirServer !== 'string') {
-      console.error('Missing fhirServer value in config.')
-    }
     ReactDOM.render(<App config={config} />, document.getElementById('root'))
   })
   .catch(error => console.error(error))

@@ -1,5 +1,5 @@
 {
   "fhirServer": "http://ontoserver.csiro.au/stu3-latest",
-  "narrativeStyles": "/agency-narrative.css",
-  "requestMode": "cors"
+  "fhirVersion": "3.0.1",
+  "narrativeStyles": "/agency-narrative.css"
 }

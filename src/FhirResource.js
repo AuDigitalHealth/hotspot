@@ -1,9 +1,12 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
 import http from 'axios'
 
 import Narrative from './Narrative.js'
 import Raw from './Raw.js'
+import { extractJSONMetadata } from './fhir/jsonParsing.js'
+import { extractXMLMetadata } from './fhir/xmlParsing.js'
 
 import './css/FhirResource.css'
 
@@ -49,10 +52,10 @@ class FhirResource extends Component {
 
   async extractMetadata(resource) {
     if (resource.format === 'json') {
-      const metadata = await FhirResource.extractJSONMetadata(resource.parsed)
+      const metadata = await extractJSONMetadata(resource.parsed)
       return { ...resource, ...metadata }
     } else if (resource.format === 'xml') {
-      const metadata = await FhirResource.extractXMLMetadata(resource.raw)
+      const metadata = await extractXMLMetadata(resource.raw)
       return { ...resource, ...metadata }
     } else {
       throw new Error('Unsupported content type.')
@@ -93,6 +96,16 @@ class FhirResource extends Component {
     }
   }
 
+  valueSetExpansionPath(valueSetUri) {
+    if (!valueSetUri) {
+      return null
+    }
+    const fhirMajorVersion = parseInt(this.props.fhirVersion.split('.')[0], 10)
+    const uriParam = fhirMajorVersion >= 3 ? 'url' : 'identifier'
+    const escapedUri = encodeURIComponent(valueSetUri)
+    return `/ValueSet/$expand?${uriParam}=${escapedUri}`
+  }
+
   componentWillMount() {
     this.updateResource(this.props)
   }
@@ -120,7 +133,8 @@ class FhirResource extends Component {
   render() {
     const { fhirServer, narrativeStyles } = this.props
     const { status, format, narrative, raw, activeTab, error } = this.state
-    const { title, url, version } = this.state
+    const { title, url, version, valueSetUri, expansion } = this.state
+    const valueSetExpansionPath = this.valueSetExpansionPath(valueSetUri)
 
     switch (status) {
       case 'loading':
@@ -153,6 +167,16 @@ class FhirResource extends Component {
                     <dt className='version'>Version</dt>
                     <dd>
                       {version}
+                    </dd>
+                  </div>
+                : null}
+              {valueSetUri && !expansion
+                ? <div>
+                    <dt className='value-set-uri'>Expansion</dt>
+                    <dd>
+                      <Link to={valueSetExpansionPath}>
+                        {valueSetExpansionPath}
+                      </Link>
                     </dd>
                   </div>
                 : null}
@@ -239,68 +263,6 @@ class FhirResource extends Component {
       return 'xml'
     } else {
       return null
-    }
-  }
-
-  static async extractJSONMetadata(parsed) {
-    try {
-      const metadata = {}
-      // Prefer title over name over resource type.
-      if (parsed.resourceType) {
-        metadata.title = parsed.resourceType
-      }
-      if (parsed.name) {
-        metadata.title = parsed.name
-      }
-      if (parsed.title) {
-        metadata.title = parsed.title
-      }
-      if (parsed.url) {
-        metadata.url = parsed.url
-      }
-      if (parsed.version) {
-        metadata.version = parsed.version
-      }
-      if (parsed.text && parsed.text.div) {
-        metadata.narrative = parsed.text.div
-      }
-      return metadata
-    } catch (error) {
-      throw new Error(
-        `There was a problem parsing the JSON FHIR resource: "${error.message}"`
-      )
-    }
-  }
-
-  static async extractXMLMetadata(raw) {
-    try {
-      const parser = new DOMParser()
-      const doc = parser.parseFromString(raw, 'application/xml')
-      const metadata = {}
-      // Prefer title over name over resource type.
-      const resource = doc.querySelector(':root')
-      const name = doc.querySelector(':root > name')
-      const title = doc.querySelector(':root > title')
-      metadata.title = title
-        ? title.getAttribute('value')
-        : name
-          ? name.getAttribute('value')
-          : resource ? resource.nodeName : undefined
-      const url = doc.querySelector(':root > url')
-      metadata.url = url ? url.getAttribute('value') : undefined
-      const version = doc.querySelector(':root > version')
-      metadata.version = version ? version.getAttribute('value') : undefined
-      const narrative = doc.querySelector(':root > text div')
-      // Serialize the narrative XML back out to a plain string.
-      if (narrative) {
-        const serializer = new XMLSerializer()
-        metadata.narrative = serializer.serializeToString(narrative)
-      }
-      return metadata
-    } catch (error) {
-      throw new Error(
-        `There was a problem parsing the XML FHIR resource: "${error.message}"`
-      )
     }
   }
 }
