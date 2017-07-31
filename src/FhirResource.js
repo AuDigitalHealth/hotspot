@@ -84,10 +84,9 @@ class FhirResource extends Component {
   async updateActiveTab(resource) {
     return {
       ...resource,
-      activeTab:
-        this.state.activeTab === 'narrative' && !resource.narrative
-          ? 'raw'
-          : this.state.activeTab,
+      activeTab: resource.narrative
+        ? 'narrative'
+        : resource.expansion ? 'expansion' : 'raw',
     }
   }
 
