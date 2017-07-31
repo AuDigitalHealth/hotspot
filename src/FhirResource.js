@@ -169,9 +169,7 @@ class FhirResource extends Component {
                 ? <div>
                     <dt className='url'>URI</dt>
                     <dd>
-                      <a href={url}>
-                        {url}
-                      </a>
+                      {url}
                     </dd>
                   </div>
                 : null}
