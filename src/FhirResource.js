@@ -31,6 +31,16 @@ class FhirResource extends Component {
   }
 
   updateResource(props) {
+    const emptyMetadata = {
+      title: undefined,
+      url: undefined,
+      version: undefined,
+      resourceType: undefined,
+      narrative: undefined,
+      valueSetUri: undefined,
+      expansion: undefined,
+    }
+
     return this.setState(
       () => ({ status: 'loading' }),
       () =>
@@ -38,7 +48,9 @@ class FhirResource extends Component {
           .then(resource => this.extractMetadata(resource))
           .then(resource => this.updatePageTitle(resource))
           .then(resource => this.updateActiveTab(resource))
-          .then(resource => this.setState({ ...resource, status: 'loaded' }))
+          .then(resource =>
+            this.setState({ ...emptyMetadata, ...resource, status: 'loaded' })
+          )
           .catch(error => this.handleError(error))
     )
   }
