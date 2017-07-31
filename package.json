@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "axios": "^0.16.2",
+    "lodash.intersection": "^4.4.0",
     "prop-types": "^15.5.10",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
@@ -35,7 +36,12 @@
     "xmldom": "^0.1.27"
   },
   "jest": {
-    "snapshotSerializers": ["enzyme-to-json/serializer"]
+    "snapshotSerializers": [
+      "enzyme-to-json/serializer"
+    ]
   },
-  "pre-commit": ["lint", "test-ci"]
+  "pre-commit": [
+    "lint",
+    "test-ci"
+  ]
 }

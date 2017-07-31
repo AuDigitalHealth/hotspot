@@ -1,0 +1,8 @@
+.value-set-expansion td,
+.value-set-expansion th {
+  font-size: 13px;
+}
+
+.value-set-expansion .table th {
+  text-transform: capitalize;
+}

@@ -1,3 +1,5 @@
+import pick from 'lodash.pick'
+
 export const extractJSONMetadata = async parsed => {
   try {
     const metadata = {}
@@ -33,7 +35,7 @@ export const extractJSONMetadata = async parsed => {
     }
     // Note the presence of an expansion, in the case of a ValueSet.
     if (metadata.resourceType === 'ValueSet' && parsed.expansion) {
-      metadata.expansion = true
+      metadata.expansion = parsed.expansion
     }
     return metadata
   } catch (error) {
@@ -41,4 +43,10 @@ export const extractJSONMetadata = async parsed => {
       `There was a problem parsing the JSON FHIR resource: "${error.message}"`
     )
   }
+}
+
+export const extractCodesFromJSONExpansion = async expansion => {
+  return expansion.contains.map(code =>
+    pick(code, 'system', 'code', 'display', 'abstract', 'inactive', 'version')
+  )
 }

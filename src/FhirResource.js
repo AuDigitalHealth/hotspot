@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import http from 'axios'
 
 import Narrative from './Narrative.js'
+import ValueSetExpansion from './ValueSetExpansion.js'
 import Raw from './Raw.js'
 import { extractJSONMetadata } from './fhir/jsonParsing.js'
 import { extractXMLMetadata } from './fhir/xmlParsing.js'
@@ -83,7 +84,8 @@ class FhirResource extends Component {
   }
 
   handleError(error) {
-    this.setState(() => ({ error, status: 'error' }))
+    this.setState(() => ({ error: error.message, status: 'error' }))
+    throw error
   }
 
   handleUnsuccessfulResponse(response) {
@@ -191,6 +193,14 @@ class FhirResource extends Component {
                       Narrative
                     </li>
                   : null}
+                {expansion
+                  ? <li
+                    onClick={() => this.setActiveTab('expansion')}
+                    className={activeTab === 'expansion' ? 'active' : ''}
+                    >
+                      Expansion
+                    </li>
+                  : null}
                 <li
                   onClick={() => this.setActiveTab('raw')}
                   className={activeTab === 'raw' ? 'active' : ''}
@@ -215,6 +225,20 @@ class FhirResource extends Component {
                   />
                 </section>
               : null}
+            {expansion
+              ? <section
+                className={
+                    activeTab === 'expansion'
+                      ? 'tab-content'
+                      : 'tab-content tab-content-hidden'
+                  }
+                >
+                  <ValueSetExpansion
+                    expansion={expansion}
+                    onError={this.handleError}
+                  />
+                </section>
+              : null}
             <section
               className={
                 activeTab === 'raw'
@@ -230,12 +254,19 @@ class FhirResource extends Component {
         return (
           <div className='fhir-resource'>
             <p className='error'>
-              <strong>Error</strong>&nbsp;&nbsp;&nbsp;{error.message}
+              <strong>Error</strong>&nbsp;&nbsp;&nbsp;{error}
             </p>
           </div>
         )
       default:
         console.error(`Invalid status encountered: ${status}`)
+        return (
+          <div className='fhir-resource'>
+            <p className='error'>
+              <strong>Error</strong>Invalid status encountered
+            </p>
+          </div>
+        )
     }
   }
 

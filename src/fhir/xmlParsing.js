@@ -27,9 +27,8 @@ export const extractXMLMetadata = async raw => {
       // Use the `url` element as the ValueSet URI if the resource is a ValueSet.
       metadata.valueSetUri = metadata.url
       // Note the presence of an expansion.
-      metadata.expansion = doc.querySelector(':root > expansion')
-        ? true
-        : undefined
+      const expansion = doc.querySelector(':root > expansion')
+      metadata.expansion = expansion || undefined
     } else if (metadata.resourceType === 'CodeSystem') {
       // Use the `valueSet` element as the ValueSet URI if the resource is a
       // CodeSystem.
@@ -45,4 +44,28 @@ export const extractXMLMetadata = async raw => {
       `There was a problem parsing the XML FHIR resource: "${error.message}"`
     )
   }
+}
+
+export const extractCodesFromXMLExpansion = async expansion => {
+  const contains = expansion.querySelectorAll('contains')
+  const codes = []
+  for (const code of contains) {
+    const elements = [
+      'system',
+      'code',
+      'display',
+      'abstract',
+      'inactive',
+      'version',
+    ]
+    const extracted = {}
+    for (const element of elements) {
+      const found = code.querySelector(element)
+      if (found) {
+        extracted[element] = found.getAttribute('value')
+      }
+    }
+    codes.push(extracted)
+  }
+  return codes
 }
