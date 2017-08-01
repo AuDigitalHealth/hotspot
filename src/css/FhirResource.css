@@ -57,13 +57,14 @@
   margin: 30px 0;
 }
 
-.fhir-resource ol {
+.fhir-resource nav ol {
   margin: 0 11px;
   padding: 0;
   display: flex;
 }
 
-.fhir-resource li {
+.fhir-resource nav li,
+.fhir-resource nav a {
   border-width: 1px 1px 0;
   border-color: #ccc;
   border-style: solid;
@@ -78,9 +79,23 @@
   transition: opacity 0.5s;
 }
 
-.fhir-resource li.active,
-.fhir-resource li:hover {
+.fhir-resource nav li.active,
+.fhir-resource nav li:hover,
+.fhir-resource nav a:hover {
   opacity: 1;
+}
+
+.fhir-resource nav a {
+  text-decoration: none;
+  color: black;
+}
+
+.fhir-resource nav a:first-of-type {
+  margin-left: auto;
+}
+
+.fhir-resource nav a:after {
+  content: '\000A0\02192';
 }
 
 .fhir-resource .tab-content {

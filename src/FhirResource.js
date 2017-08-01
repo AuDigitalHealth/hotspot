@@ -216,6 +216,11 @@ class FhirResource extends Component {
                 >
                   {format ? format.toUpperCase() : undefined}
                 </li>
+                {valueSetUri && !expansion
+                  ? <Link to={valueSetExpansionPath} className='link'>
+                      Expansion
+                    </Link>
+                  : null}
               </ol>
             </nav>
             {narrative
