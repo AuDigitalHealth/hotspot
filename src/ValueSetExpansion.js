@@ -1,9 +1,11 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
 import intersection from 'lodash.intersection'
 
 import { extractCodesFromJSONExpansion } from './fhir/jsonParsing.js'
 import { extractCodesFromXMLExpansion } from './fhir/xmlParsing.js'
+import { codeSystemSearchPath, lookupPath } from './fhir/paths.js'
 
 import './css/tables.css'
 import './css/ValueSetExpansion.css'
@@ -78,12 +80,22 @@ class ValueSetExpansion extends Component {
       <tr key={i}>
         {code.system
           ? <td>
-              {code.system}
+              <Link to={codeSystemSearchPath(code.system)}>
+                {code.system}
+              </Link>
             </td>
           : null}
         {code.code
           ? <td>
-              {code.code}
+              {code.code && code.system && code.version
+                ? <Link to={lookupPath(code.system, code.code, code.version)}>
+                    {code.code}
+                  </Link>
+                : code.code && code.system
+                  ? <Link to={lookupPath(code.system, code.code)}>
+                      {code.code}
+                    </Link>
+                  : code.code}
             </td>
           : null}
         {code.display

@@ -34,7 +34,7 @@ class Error extends Component {
               </p>
             : undefined}
           {error.issue.diagnostics
-            ? <p className='display'>
+            ? <p className='diagnostics'>
                 {error.issue.diagnostics}
               </p>
             : undefined}
@@ -63,7 +63,7 @@ class Error extends Component {
     } else if (error.message) {
       return (
         <div className='error'>
-          <p className='display'>
+          <p className='message'>
             {error.message}
           </p>
         </div>

@@ -15,6 +15,7 @@ import {
   extractXMLMetadata,
   opOutcomeFromXmlResponse,
 } from './fhir/xmlParsing.js'
+import { valueSetExpansionPath } from './fhir/paths.js'
 
 import './css/FhirResource.css'
 
@@ -128,16 +129,6 @@ class FhirResource extends Component {
     }
   }
 
-  valueSetExpansionPath(valueSetUri) {
-    if (!valueSetUri) {
-      return null
-    }
-    const fhirMajorVersion = parseInt(this.props.fhirVersion.split('.')[0], 10)
-    const uriParam = fhirMajorVersion >= 3 ? 'url' : 'identifier'
-    const escapedUri = encodeURIComponent(valueSetUri)
-    return `/ValueSet/$expand?${uriParam}=${escapedUri}`
-  }
-
   componentWillMount() {
     this.updateResource(this.props)
   }
@@ -163,10 +154,10 @@ class FhirResource extends Component {
   }
 
   render() {
-    const { fhirServer, narrativeStyles } = this.props
+    const { fhirServer, fhirVersion, narrativeStyles } = this.props
     const { status, format, narrative, raw, activeTab, error } = this.state
     const { title, url, version, valueSetUri, expansion } = this.state
-    const valueSetExpansionPath = this.valueSetExpansionPath(valueSetUri)
+    const valueSetPath = valueSetExpansionPath(valueSetUri, fhirVersion)
 
     switch (status) {
       case 'loading':
@@ -226,7 +217,7 @@ class FhirResource extends Component {
                   {format ? format.toUpperCase() : undefined}
                 </li>
                 {valueSetUri && !expansion
-                  ? <Link to={valueSetExpansionPath} className='link'>
+                  ? <Link to={valueSetPath} className='link'>
                       Expansion
                     </Link>
                   : null}
