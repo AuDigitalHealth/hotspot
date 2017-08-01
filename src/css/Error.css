@@ -1,0 +1,22 @@
+.error {
+  position: relative;
+  background-color: #fff1dd;
+  border: 1px solid #ff7600;
+  border-radius: 6px;
+  padding: 0 18px 0 80px;
+  font-size: 14px;
+}
+
+.error > strong {
+  position: absolute;
+  top: 10px;
+  left: 18px;
+}
+
+.error p {
+  margin: 0.8em 0;
+}
+
+.error p strong {
+  font-weight: normal;
+}

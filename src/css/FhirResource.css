@@ -105,11 +105,3 @@
 .fhir-resource .tab-content-hidden {
   display: none;
 }
-
-.fhir-resource .error {
-  background-color: #fff1dd;
-  border: 1px solid #ff7600;
-  border-radius: 6px;
-  padding: 15px 18px;
-  font-size: 14px;
-}

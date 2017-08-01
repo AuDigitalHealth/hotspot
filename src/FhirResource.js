@@ -6,8 +6,15 @@ import http from 'axios'
 import Narrative from './Narrative.js'
 import ValueSetExpansion from './ValueSetExpansion.js'
 import Raw from './Raw.js'
-import { extractJSONMetadata } from './fhir/jsonParsing.js'
-import { extractXMLMetadata } from './fhir/xmlParsing.js'
+import Error from './Error.js'
+import {
+  extractJSONMetadata,
+  opOutcomeFromJsonResponse,
+} from './fhir/jsonParsing.js'
+import {
+  extractXMLMetadata,
+  opOutcomeFromXmlResponse,
+} from './fhir/xmlParsing.js'
 
 import './css/FhirResource.css'
 
@@ -56,11 +63,16 @@ class FhirResource extends Component {
   }
 
   async getResource(props) {
-    const { fhirServer, path, query } = props
-    const response = await http.get(fhirServer + path + query)
-    const format = FhirResource.sniffFormat(response.headers['content-type'])
-    const parsed = format === 'json' ? { parsed: response.data } : {}
-    return { raw: response.request.responseText, format, ...parsed }
+    try {
+      const { fhirServer, path, query } = props
+      const response = await http.get(fhirServer + path + query)
+      const format = FhirResource.sniffFormat(response.headers['content-type'])
+      const parsed = format === 'json' ? { parsed: response.data } : {}
+      return { raw: response.request.responseText, format, ...parsed }
+    } catch (error) {
+      if (error.response) this.handleUnsuccessfulResponse(error.response)
+      else throw error
+    }
   }
 
   async extractMetadata(resource) {
@@ -95,17 +107,24 @@ class FhirResource extends Component {
   }
 
   handleError(error) {
-    this.setState(() => ({ error: error.message, status: 'error' }))
-    throw error
+    this.setState(() => ({ error, status: 'error' }))
   }
 
   handleUnsuccessfulResponse(response) {
+    const format = FhirResource.sniffFormat(response.headers['content-type'])
+    if (format === 'json') {
+      const opOutcome = opOutcomeFromJsonResponse(response)
+      if (opOutcome) throw opOutcome
+    } else if (format === 'xml') {
+      const opOutcome = opOutcomeFromXmlResponse(response)
+      if (opOutcome) throw opOutcome
+    }
     if (response.status === 404) {
       throw new Error(
         `The resource you requested was not found: "${this.props.path}"`
       )
     } else {
-      throw new Error(response.statusText)
+      throw new Error(response.statusText || response.status)
     }
   }
 
@@ -178,16 +197,6 @@ class FhirResource extends Component {
                     <dt className='version'>Version</dt>
                     <dd>
                       {version}
-                    </dd>
-                  </div>
-                : null}
-              {valueSetUri && !expansion
-                ? <div>
-                    <dt className='value-set-uri'>Expansion</dt>
-                    <dd>
-                      <Link to={valueSetExpansionPath}>
-                        {valueSetExpansionPath}
-                      </Link>
                     </dd>
                   </div>
                 : null}
@@ -267,20 +276,11 @@ class FhirResource extends Component {
       case 'error':
         return (
           <div className='fhir-resource'>
-            <p className='error'>
-              <strong>Error</strong>&nbsp;&nbsp;&nbsp;{error}
-            </p>
+            <Error error={error} />
           </div>
         )
       default:
-        console.error(`Invalid status encountered: ${status}`)
-        return (
-          <div className='fhir-resource'>
-            <p className='error'>
-              <strong>Error</strong>Invalid status encountered
-            </p>
-          </div>
-        )
+        throw new Error(`Invalid status encountered: ${status}`)
     }
   }
 
