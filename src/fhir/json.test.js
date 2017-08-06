@@ -1,9 +1,9 @@
 import fs from 'fs'
 import _ from 'lodash'
 
-import { extractJSONMetadata } from './jsonParsing.js'
+import { extractRawJsonMetadata } from './json.js'
 
-describe('FhirResource', () => {
+describe('extractRawJsonMetadata', () => {
   const jsonResources = [
     [
       'NCTS-Complete-Code-System-2.0.0.json',
@@ -40,8 +40,7 @@ describe('FhirResource', () => {
   for (const resource of jsonResources) {
     it(`should extract correct metadata for ${resource[0]}`, async () => {
       const raw = fs.readFileSync('test/' + resource[0], { encoding: 'utf-8' })
-      const parsed = JSON.parse(raw)
-      return extractJSONMetadata(parsed).then(metadata => {
+      return extractRawJsonMetadata(raw).then(metadata => {
         expect(
           _.pick(
             metadata,
@@ -55,7 +54,4 @@ describe('FhirResource', () => {
       })
     })
   }
-
-  // Can't currently test XML resources, due to the lack of a level 3
-  // implementation of the W3C DOM API in Node.
 })

@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
-import FhirResource from './FhirResource.js'
+
+import RemoteFhirResource from './RemoteFhirResource.js'
 
 import agencyLogo from './img/agency.svg'
 import csiroLogo from './img/csiro.svg'
@@ -19,8 +20,16 @@ class App extends Component {
     },
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return false
+  constructor(props) {
+    super(props)
+    this.state = {}
+  }
+
+  handleLoad(metadata) {
+    // Update the document title with the title and version of the loaded FHIR
+    // resource.
+    const { title, version } = metadata
+    document.title = version ? `${title} (${version})` : title
   }
 
   render() {
@@ -45,28 +54,31 @@ class App extends Component {
             </a>
           </h1>
         </header>
-        <Router>
-          <Switch>
-            <Route
-              path='/:path'
-              render={({ location }) =>
-                <FhirResource
-                  path={location.pathname}
-                  query={location.search}
-                  {...config}
-                />}
-            />
-            <Route
-              render={() =>
-                <div className='fhir-resource'>
-                  <p>
-                    Please provide a path to a valid FHIR resource within the
-                    URL.
-                  </p>
-                </div>}
-            />
-          </Switch>
-        </Router>
+        <main>
+          <Router>
+            <Switch>
+              <Route
+                path='/:path'
+                render={({ location }) =>
+                  <RemoteFhirResource
+                    path={location.pathname}
+                    query={location.search}
+                    onLoad={this.handleLoad}
+                    {...config}
+                  />}
+              />
+              <Route
+                render={() =>
+                  <div className='fhir-resource'>
+                    <p>
+                      Please provide a path to a valid FHIR resource within the
+                      URL.
+                    </p>
+                  </div>}
+              />
+            </Switch>
+          </Router>
+        </main>
       </div>
     )
   }

@@ -5,6 +5,8 @@
   border-radius: 6px;
   padding: 0 18px 0 80px;
   font-size: 14px;
+  max-width: 900px;
+  clear: left;
 }
 
 .error > strong {

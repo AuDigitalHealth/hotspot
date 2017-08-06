@@ -1,44 +1,50 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
-import http from 'axios'
 
 import Narrative from './Narrative.js'
 import ValueSetExpansion from './ValueSetExpansion.js'
+import Bundle from './Bundle.js'
 import Raw from './Raw.js'
-import Error from './Error.js'
-import {
-  extractJSONMetadata,
-  opOutcomeFromJsonResponse,
-} from './fhir/jsonParsing.js'
-import {
-  extractXMLMetadata,
-  opOutcomeFromXmlResponse,
-} from './fhir/xmlParsing.js'
-import { valueSetExpansionPath } from './fhir/paths.js'
+import { extractJsonMetadata, extractRawJsonMetadata } from './fhir/json.js'
+import { extractXmlMetadata, extractRawXmlMetadata } from './fhir/xml.js'
+import { valueSetExpansionPath } from './fhir/restApi.js'
 
 import './css/FhirResource.css'
+import './css/InlineFhirResource.css'
 
 // A component that presents a human-friendly representation of an XML or JSON
 // FHIR resource, including Narrative and Raw tabs.
 class FhirResource extends Component {
   static propTypes = {
-    path: PropTypes.string.isRequired,
-    query: PropTypes.string.isRequired,
     fhirServer: PropTypes.string.isRequired,
+    fhirVersion: PropTypes.string.isRequired,
     narrativeStyles: PropTypes.string,
+    resource: PropTypes.oneOfType([
+      PropTypes.object, // parsed JSON document fragment
+      PropTypes.instanceOf(Element), // parsed XML document fragment
+      PropTypes.string, // unparsed string
+    ]),
+    format: PropTypes.oneOf([ 'json', 'xml' ]),
+    raw: PropTypes.string, // supplied if resource is not raw string and raw tab is required
+    fullUrl: PropTypes.string,
+    className: PropTypes.string,
+    noTabSelectedAtLoad: PropTypes.boolean,
+    onLoad: PropTypes.func,
+  }
+
+  static defaultProps = {
+    className: 'fhir-resource',
+    noTabSelectedAtLoad: false,
   }
 
   constructor(props) {
     super(props)
-    this.state = {
-      status: 'loading',
-      activeTab: 'narrative',
-    }
     this.handleError = this.handleError.bind(this)
   }
 
   updateResource(props) {
+    const { resource, format } = props
     const emptyMetadata = {
       title: undefined,
       url: undefined,
@@ -48,85 +54,62 @@ class FhirResource extends Component {
       valueSetUri: undefined,
       expansion: undefined,
     }
-
     return this.setState(
       () => ({ status: 'loading' }),
-      () =>
-        this.getResource(props)
-          .then(resource => this.extractMetadata(resource))
-          .then(resource => this.updatePageTitle(resource))
-          .then(resource => this.updateActiveTab(resource))
-          .then(resource =>
-            this.setState({ ...emptyMetadata, ...resource, status: 'loaded' })
+      () => {
+        // Do nothing if resource has not been passed down yet.
+        if (!(resource && format)) return
+        return this.extractMetadata(props)
+          .then(metadata => {
+            if (this.props.onLoad) this.props.onLoad(metadata)
+            return metadata
+          })
+          .then(metadata => this.updateActiveTab(metadata))
+          .then(metadata =>
+            this.setState({ ...emptyMetadata, ...metadata, status: 'loaded' })
           )
           .catch(error => this.handleError(error))
+      }
     )
   }
 
-  async getResource(props) {
-    try {
-      const { fhirServer, path, query } = props
-      const response = await http.get(fhirServer + path + query)
-      const format = FhirResource.sniffFormat(response.headers['content-type'])
-      const parsed = format === 'json' ? { parsed: response.data } : {}
-      return { raw: response.request.responseText, format, ...parsed }
-    } catch (error) {
-      if (error.response) this.handleUnsuccessfulResponse(error.response)
-      else throw error
-    }
-  }
-
-  async extractMetadata(resource) {
-    if (resource.format === 'json') {
-      const metadata = await extractJSONMetadata(resource.parsed)
-      return { ...resource, ...metadata }
-    } else if (resource.format === 'xml') {
-      const metadata = await extractXMLMetadata(resource.raw)
-      return { ...resource, ...metadata }
+  async extractMetadata(props) {
+    if (props.resource instanceof Element) {
+      return extractXmlMetadata(props.resource)
+    } else if (typeof props.resource === 'object') {
+      return extractJsonMetadata(props.resource)
+    } else if (typeof props.resource === 'string') {
+      return props.format === 'json'
+        ? extractRawJsonMetadata(props.resource)
+        : extractRawXmlMetadata(props.resource)
     } else {
-      throw new Error('Unsupported content type.')
+      throw new Error('Unexpected type encountered in resource prop.')
     }
   }
 
-  async updatePageTitle(resource) {
-    const { title, version } = resource
-    document.title = version ? `${title} (${version})` : title
-    return resource
-  }
-
-  async updateActiveTab(resource) {
+  async updateActiveTab(metadata) {
+    // Skip setting of active tab if not already explicitly selected, if the
+    // `noTabSelectedAtLoad` option is set.
+    if (this.props.noTabSelectedAtLoad && !this.props.activeTab) return metadata
     return {
-      ...resource,
-      activeTab: resource.narrative
+      ...metadata,
+      activeTab: metadata.narrative
         ? 'narrative'
-        : resource.expansion ? 'expansion' : 'raw',
+        : metadata.expansion ? 'expansion' : metadata.bundle ? 'bundle' : 'raw',
     }
   }
 
   setActiveTab(tabName) {
-    this.setState(() => ({ activeTab: tabName }))
+    this.setState(
+      () =>
+        this.props.noTabSelectedAtLoad && this.state.activeTab === tabName
+          ? { activeTab: undefined }
+          : { activeTab: tabName }
+    )
   }
 
   handleError(error) {
-    this.setState(() => ({ error, status: 'error' }))
-  }
-
-  handleUnsuccessfulResponse(response) {
-    const format = FhirResource.sniffFormat(response.headers['content-type'])
-    if (format === 'json') {
-      const opOutcome = opOutcomeFromJsonResponse(response)
-      if (opOutcome) throw opOutcome
-    } else if (format === 'xml') {
-      const opOutcome = opOutcomeFromXmlResponse(response)
-      if (opOutcome) throw opOutcome
-    }
-    if (response.status === 404) {
-      throw new Error(
-        `The resource you requested was not found: "${this.props.path}"`
-      )
-    } else {
-      throw new Error(response.statusText || response.status)
-    }
+    if (this.props.onError) this.props.onError(error)
   }
 
   componentWillMount() {
@@ -137,124 +120,168 @@ class FhirResource extends Component {
     this.updateResource(nextProps)
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
+  render() {
+    const { className } = this.props
+    const { status } = this.state
+    return status === 'loaded'
+      ? <div className={className}>
+          {this.renderMetadata()}
+          {this.renderTabs()}
+          {this.renderTabContent()}
+        </div>
+      : <div className={className} />
+  }
+
+  renderMetadata() {
+    const { title, url, version } = this.state
     return (
-      this.props.path !== nextProps.path ||
-      this.props.query !== nextProps.query ||
-      this.state.status !== nextState.status ||
-      this.state.format !== nextState.format ||
-      this.state.narrative !== nextState.narrative ||
-      this.state.raw !== nextState.raw ||
-      this.state.activeTab !== nextState.activeTab ||
-      this.state.title !== nextState.title ||
-      this.state.url !== nextState.url ||
-      this.state.version !== nextState.version ||
-      this.state.error !== nextState.error
+      <div className='metadata'>
+        {title
+          ? <h2 className='title'>
+              {title}
+            </h2>
+          : null}
+        <dl className='metadata'>
+          {url
+            ? <div>
+                <dt className='url'>URI</dt>
+                <dd>
+                  {url}
+                </dd>
+              </div>
+            : null}
+          {version
+            ? <div>
+                <dt className='version'>Version</dt>
+                <dd>
+                  {version}
+                </dd>
+              </div>
+            : null}
+        </dl>
+      </div>
     )
   }
 
-  render() {
-    const { fhirServer, fhirVersion, narrativeStyles } = this.props
-    const { status, format, narrative, raw, activeTab, error } = this.state
-    const { title, url, version, valueSetUri, expansion } = this.state
+  renderTabs() {
+    const { fhirServer, fhirVersion, format, fullUrl } = this.props
+    const { narrative, expansion, bundle, valueSetUri, activeTab } = this.state
     const valueSetPath = valueSetExpansionPath(valueSetUri, fhirVersion)
+    return (
+      <nav>
+        <ol>
+          {narrative
+            ? <li
+              onClick={() => this.setActiveTab('narrative')}
+              className={activeTab === 'narrative' ? 'active' : ''}
+              >
+                Narrative
+              </li>
+            : null}
+          {expansion
+            ? <li
+              onClick={() => this.setActiveTab('expansion')}
+              className={activeTab === 'expansion' ? 'active' : ''}
+              >
+                Expansion
+              </li>
+            : null}
+          {bundle
+            ? <li
+              onClick={() => this.setActiveTab('bundle')}
+              className={activeTab === 'bundle' ? 'active' : ''}
+              >
+                Bundle
+              </li>
+            : null}
+          <li
+            onClick={() => this.setActiveTab('raw')}
+            className={activeTab === 'raw' ? 'active' : ''}
+          >
+            {format ? format.toUpperCase() : undefined}
+          </li>
+          {fullUrl
+            ? <Link to={fullUrl.replace(fhirServer, '')}>Full Resource</Link>
+            : null}
+          {valueSetUri && !expansion
+            ? <Link to={valueSetPath} className='link'>
+                Expansion
+              </Link>
+            : null}
+        </ol>
+      </nav>
+    )
+  }
 
-    switch (status) {
-      case 'loading':
-        return (
-          <div className='fhir-resource'>
-            <p className='loading'>Loading...</p>
-          </div>
-        )
-      case 'loaded':
-        return (
-          <div className='fhir-resource'>
-            {title
-              ? <h2 className='title'>
-                  {title}
-                </h2>
-              : null}
-            <dl className='metadata'>
-              {url
-                ? <div>
-                    <dt className='url'>URI</dt>
-                    <dd>
-                      {url}
-                    </dd>
-                  </div>
-                : null}
-              {version
-                ? <div>
-                    <dt className='version'>Version</dt>
-                    <dd>
-                      {version}
-                    </dd>
-                  </div>
-                : null}
-            </dl>
-            <nav>
-              <ol>
-                {narrative
-                  ? <li
-                    onClick={() => this.setActiveTab('narrative')}
-                    className={activeTab === 'narrative' ? 'active' : ''}
-                    >
-                      Narrative
-                    </li>
-                  : null}
-                {expansion
-                  ? <li
-                    onClick={() => this.setActiveTab('expansion')}
-                    className={activeTab === 'expansion' ? 'active' : ''}
-                    >
-                      Expansion
-                    </li>
-                  : null}
-                <li
-                  onClick={() => this.setActiveTab('raw')}
-                  className={activeTab === 'raw' ? 'active' : ''}
-                >
-                  {format ? format.toUpperCase() : undefined}
-                </li>
-                {valueSetUri && !expansion
-                  ? <Link to={valueSetPath} className='link'>
-                      Expansion
-                    </Link>
-                  : null}
-              </ol>
-            </nav>
-            {narrative
-              ? <section
-                className={
-                    activeTab === 'narrative'
-                      ? 'tab-content'
-                      : 'tab-content tab-content-hidden'
-                  }
-                >
-                  <Narrative
-                    content={narrative}
-                    stylesPath={narrativeStyles}
-                    fhirServer={fhirServer}
-                    onError={this.handleError}
-                  />
-                </section>
-              : null}
-            {expansion
-              ? <section
-                className={
-                    activeTab === 'expansion'
-                      ? 'tab-content'
-                      : 'tab-content tab-content-hidden'
-                  }
-                >
-                  <ValueSetExpansion
-                    expansion={expansion}
-                    onError={this.handleError}
-                  />
-                </section>
-              : null}
-            <section
-              className={
+  renderTabContent() {
+    const {
+      fhirServer,
+      fhirVersion,
+      narrativeStyles,
+      resource,
+      format,
+    } = this.props
+    const { narrative, activeTab, expansion, bundle } = this.state
+    // If the resource is provided raw, use that as our raw value. Otherwise,
+    // use the raw prop. If there is no raw prop and the resource is an object,
+    // create a JSON raw value from it.
+    const raw =
+      typeof resource === 'string'
+        ? resource
+        : this.props.raw
+          ? this.props.raw
+          : typeof resource === 'object' ? JSON.stringify(resource) : null
+    return (
+      <div className='tab-content-wrapper'>
+        {narrative
+          ? <section
+            className={
+                activeTab === 'narrative'
+                  ? 'tab-content'
+                  : 'tab-content tab-content-hidden'
+              }
+            >
+              <Narrative
+                content={narrative}
+                stylesPath={narrativeStyles}
+                fhirServer={fhirServer}
+                onError={this.handleError}
+              />
+            </section>
+          : null}
+        {expansion
+          ? <section
+            className={
+                activeTab === 'expansion'
+                  ? 'tab-content'
+                  : 'tab-content tab-content-hidden'
+              }
+            >
+              <ValueSetExpansion
+                expansion={expansion}
+                onError={this.handleError}
+              />
+            </section>
+          : null}
+        {bundle
+          ? <section
+            className={
+                activeTab === 'bundle'
+                  ? 'tab-content'
+                  : 'tab-content tab-content-hidden'
+              }
+            >
+              <Bundle
+                fhirServer={fhirServer}
+                fhirVersion={fhirVersion}
+                bundle={bundle}
+                onError={this.handleError}
+              />
+            </section>
+          : null}
+        {raw
+          ? <section
+            className={
                 activeTab === 'raw'
                   ? 'tab-content'
                   : 'tab-content tab-content-hidden'
@@ -262,44 +289,9 @@ class FhirResource extends Component {
             >
               <Raw content={raw} format={format} onError={this.handleError} />
             </section>
-          </div>
-        )
-      case 'error':
-        return (
-          <div className='fhir-resource'>
-            <Error error={error} />
-          </div>
-        )
-      default:
-        throw new Error(`Invalid status encountered: ${status}`)
-    }
-  }
-
-  static sniffFormat(contentType) {
-    // Sniff JSON if the Content-Type header matches:
-    // - application/json
-    // - application/fhir+json (FHIR STU3)
-    // - application/json+fhir (FHIR DSTU2)
-    if (
-      contentType.match(
-        /(application\/json|application\/fhir\+json|application\/json\+fhir)/
-      )
-    ) {
-      return 'json'
-      // Sniff XML if the Content-Type header matches:
-      // - text/xml
-      // - application/xml
-      // - application/fhir+xml (FHIR STU3)
-      // - application/json+xml (FHIR DSTU2)
-    } else if (
-      contentType.match(
-        /(text\/xml|application\/xml|application\/fhir\+xml|application\/xml\+fhir)/
-      )
-    ) {
-      return 'xml'
-    } else {
-      return null
-    }
+          : null}
+      </div>
+    )
   }
 }
 

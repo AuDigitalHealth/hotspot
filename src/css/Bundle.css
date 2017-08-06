@@ -1,0 +1,40 @@
+.bundle .entry {
+  background-color: #f9f3e5;
+  border: 1px solid #e6d9bd;
+  border-radius: 6px;
+  padding: 14px 1px;
+  margin: 16px 0;
+  max-width: 900px;
+}
+
+.bundle .entry h2 {
+  font-size: 15px;
+}
+
+.bundle .entry .fhir-resource > .metadata dt,
+.bundle .entry .fhir-resource > .metadata dd {
+  font-size: 12px;
+}
+
+.bundle .entry .fhir-resource nav {
+  margin: 0;
+  border-bottom: 0;
+}
+
+.bundle .entry .fhir-resource nav li,
+.bundle .entry .fhir-resource nav a {
+  font-size: 13px;
+  padding: 6px 9px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.bundle .entry .fhir-resource .tab-content {
+  background-color: white;
+  margin-bottom: 0;
+  padding: 1px 12px;
+  margin-top: 15px;
+  border-radius: 6px;
+  border: 1px solid #e6d9bd;
+  font-size: 85%;
+}

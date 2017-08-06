@@ -63,6 +63,7 @@ class Error extends Component {
     } else if (error.message) {
       return (
         <div className='error'>
+          <strong>Error</strong>
           <p className='message'>
             {error.message}
           </p>

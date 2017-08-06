@@ -1,8 +1,12 @@
 import { OpOutcomeError } from '../errorTypes.js'
 
-export const extractXMLMetadata = async raw => {
+export const extractRawXmlMetadata = async raw => {
   const parser = new DOMParser()
   const doc = parser.parseFromString(raw, 'application/xml')
+  return extractXmlMetadata(doc)
+}
+
+export const extractXmlMetadata = async doc => {
   const metadata = {}
   // For the purposes of a display title, prefer title over name over resource
   // type.
@@ -36,6 +40,10 @@ export const extractXMLMetadata = async raw => {
     const valueSet = doc.querySelector(':root > valueSet')
     metadata.valueSetUri = valueSet ? valueSet.getAttribute('value') : undefined
   }
+  // Save the whole resource if this is a Bundle.
+  if (metadata.resourceType === 'Bundle') {
+    metadata.bundle = doc
+  }
 
   return metadata
 }
@@ -62,6 +70,10 @@ export const extractCodesFromXMLExpansion = async expansion => {
     codes.push(extracted)
   }
   return codes
+}
+
+export const extractEntriesFromXmlBundle = async bundle => {
+  return []
 }
 
 export const opOutcomeFromXmlResponse = raw => {

@@ -4,6 +4,8 @@ import sanitize from 'sanitize-html'
 import http from 'axios'
 import _ from 'lodash'
 
+import { translateHref } from './fhir/restApi.js'
+
 // Renders the XHTML narrative content from a FHIR resource, optionally
 // applying a custom stylesheet.
 class Narrative extends Component {
@@ -47,6 +49,7 @@ class Narrative extends Component {
   }
 
   sanitizeContent(content) {
+    const { fhirServer } = this.props
     const allowedTags = require('./config/allowedTags.json')
     const sanitizedContent = sanitize(content, {
       // Allow only our set of whitelisted tags.
@@ -64,30 +67,14 @@ class Narrative extends Component {
         // Translate any relative hrefs within anchors.
         a: (tagName, attribs) => ({
           tagName,
-          attribs: { ...attribs, href: this.translateHref(attribs.href) },
+          attribs: {
+            ...attribs,
+            href: translateHref(attribs.href, fhirServer),
+          },
         }),
       },
     })
     return sanitizedContent
-  }
-
-  translateHref(href) {
-    if (!href) {
-      return ''
-    }
-    const absolutePattern = /^([a-z]+:){0,1}\/\//
-    const rootRelativePattern = /^\//
-    const fragmentPattern = /^#/
-    if (href.match(absolutePattern)) {
-      return href
-    } else if (href.match(rootRelativePattern)) {
-      const fhirServerUrl = new URL(this.props.fhirServer)
-      return fhirServerUrl.protocol + fhirServerUrl.hostname + href
-    } else if (href.match(fragmentPattern)) {
-      return href
-    } else {
-      return this.props.fhirServer + '/' + href
-    }
   }
 
   componentDidMount() {

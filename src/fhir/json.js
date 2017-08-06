@@ -2,7 +2,10 @@ import pick from 'lodash.pick'
 
 import { OpOutcomeError } from '../errorTypes.js'
 
-export const extractJSONMetadata = async parsed => {
+export const extractRawJsonMetadata = async raw =>
+  extractJsonMetadata(JSON.parse(raw))
+
+export const extractJsonMetadata = async parsed => {
   try {
     const metadata = {}
     // For the purposes of a display title, prefer title over name over resource
@@ -39,6 +42,10 @@ export const extractJSONMetadata = async parsed => {
     if (metadata.resourceType === 'ValueSet' && parsed.expansion) {
       metadata.expansion = parsed.expansion
     }
+    // Save the whole resource if this is a Bundle.
+    if (metadata.resourceType === 'Bundle') {
+      metadata.bundle = parsed
+    }
     return metadata
   } catch (error) {
     throw new Error(
@@ -48,9 +55,15 @@ export const extractJSONMetadata = async parsed => {
 }
 
 export const extractCodesFromJSONExpansion = async expansion => {
+  if (!expansion.contains) return []
   return expansion.contains.map(code =>
     pick(code, 'system', 'code', 'display', 'abstract', 'inactive', 'version')
   )
+}
+
+export const extractEntriesFromJsonBundle = async bundle => {
+  if (!bundle.entry) return []
+  return bundle.entry.map(entry => pick(entry, 'resource', 'fullUrl'))
 }
 
 export const opOutcomeFromJsonResponse = response => {

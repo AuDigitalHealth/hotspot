@@ -3,9 +3,9 @@ import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 import intersection from 'lodash.intersection'
 
-import { extractCodesFromJSONExpansion } from './fhir/jsonParsing.js'
-import { extractCodesFromXMLExpansion } from './fhir/xmlParsing.js'
-import { codeSystemSearchPath, lookupPath } from './fhir/paths.js'
+import { extractCodesFromJSONExpansion } from './fhir/json.js'
+import { extractCodesFromXMLExpansion } from './fhir/xml.js'
+import { codeSystemSearchPath, lookupPath } from './fhir/restApi.js'
 
 import './css/tables.css'
 import './css/ValueSetExpansion.css'
@@ -56,7 +56,7 @@ class ValueSetExpansion extends Component {
 
   render() {
     const { codes } = this.state
-    if (!codes) return null
+    if (!codes) return <div className='value-set-expansion' />
     let columns = []
 
     for (const code of codes) {
