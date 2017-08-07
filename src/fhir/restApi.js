@@ -5,7 +5,7 @@ export const valueSetExpansionPath = (valueSetUri, fhirVersion) => {
   const fhirMajorVersion = parseInt(fhirVersion.split('.')[0], 10)
   const uriParam = fhirMajorVersion >= 3 ? 'url' : 'identifier'
   const escapedUri = encodeURIComponent(valueSetUri)
-  return `/ValueSet/$expand?${uriParam}=${escapedUri}`
+  return `/ValueSet/$expand?${uriParam}=${escapedUri}&count=100`
 }
 
 export const codeSystemSearchPath = codeSystemUri => {
