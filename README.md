@@ -44,6 +44,8 @@ if your `fhirServer` was http://ontoserver.csiro.au/stu3-latest, then a request
 with the path `/CodeSystem/some-code-system` would retrieve the resource from
 http://ontoserver.csiro.au/stu3-latest/CodeSystem/some-code-system.
 
+`fhirVersion`: The version of FHIR (x.y.z) assumed to be in use by the FHIR server.
+
 `narrativeStyles`: A URL to a custom stylesheet to override styles within
 narrative content.
 
