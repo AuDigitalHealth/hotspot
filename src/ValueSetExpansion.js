@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 import intersection from 'lodash.intersection'
 
-import { extractCodesFromJSONExpansion } from './fhir/json.js'
+import { extractCodesFromJsonExpansion } from './fhir/json.js'
 import { extractCodesFromXMLExpansion } from './fhir/xml.js'
 import { codeSystemSearchPath, lookupPath } from './fhir/restApi.js'
 
@@ -16,7 +16,7 @@ class ValueSetExpansion extends Component {
   static propTypes = {
     expansion: PropTypes.oneOfType([
       PropTypes.object, // parsed JSON document fragment
-      PropTypes.instanceOf(Element), // parsed XML document fragment
+      PropTypes.instanceOf(Node), // parsed XML document fragment
     ]).isRequired,
     onError: PropTypes.func,
   }
@@ -32,9 +32,9 @@ class ValueSetExpansion extends Component {
 
   extractCodes(expansion) {
     const extractCodesImpl =
-      expansion instanceof Element
+      expansion instanceof Node
         ? extractCodesFromXMLExpansion
-        : extractCodesFromJSONExpansion
+        : extractCodesFromJsonExpansion
     extractCodesImpl(expansion)
       .then(codes => this.setState(() => ({ codes })))
       .catch(error => this.handleError(error))

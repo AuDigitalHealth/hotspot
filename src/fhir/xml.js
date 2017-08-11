@@ -10,19 +10,19 @@ export const extractXmlMetadata = async doc => {
   const metadata = {}
   // For the purposes of a display title, prefer title over name over resource
   // type.
-  const resource = doc.querySelector(':root')
-  const name = doc.querySelector(':root > name')
-  const title = doc.querySelector(':root > title')
+  const resource = doc.querySelector(':root') || doc
+  const name = resource.querySelector(':scope > name')
+  const title = resource.querySelector(':scope > title')
   metadata.resourceType = resource ? resource.nodeName : undefined
   metadata.title = title
     ? title.getAttribute('value')
     : name ? name.getAttribute('value') : metadata.resourceType
-  const url = doc.querySelector(':root > url')
+  const url = resource.querySelector(':scope > url')
   metadata.url = url ? url.getAttribute('value') : undefined
-  const version = doc.querySelector(':root > version')
+  const version = resource.querySelector(':scope > version')
   metadata.version = version ? version.getAttribute('value') : undefined
   // Get the narrative.
-  const narrative = doc.querySelector(':root > text div')
+  const narrative = resource.querySelector(':scope > text div')
   // Serialize the narrative XML back out to a plain string.
   if (narrative) {
     const serializer = new XMLSerializer()
@@ -32,21 +32,24 @@ export const extractXmlMetadata = async doc => {
     // Use the `url` element as the ValueSet URI if the resource is a ValueSet.
     metadata.valueSetUri = metadata.url
     // Note the presence of an expansion.
-    const expansion = doc.querySelector(':root > expansion')
+    const expansion = resource.querySelector(':scope > expansion')
     metadata.expansion = expansion || undefined
   } else if (metadata.resourceType === 'CodeSystem') {
     // Use the `valueSet` element as the ValueSet URI if the resource is a
     // CodeSystem.
-    const valueSet = doc.querySelector(':root > valueSet')
+    const valueSet = resource.querySelector(':scope > valueSet')
     metadata.valueSetUri = valueSet ? valueSet.getAttribute('value') : undefined
   }
   // Save the whole resource if this is a Bundle.
   if (metadata.resourceType === 'Bundle') {
-    metadata.bundle = doc
+    metadata.bundle = resource
   }
 
   return metadata
 }
+
+export const rawFromXmlResource = node =>
+  new XMLSerializer().serializeToString(node)
 
 export const extractCodesFromXMLExpansion = async expansion => {
   const contains = expansion.querySelectorAll('contains')
@@ -73,7 +76,18 @@ export const extractCodesFromXMLExpansion = async expansion => {
 }
 
 export const extractEntriesFromXmlBundle = async bundle => {
-  return []
+  const entryElements = bundle.querySelectorAll(':scope entry')
+  const entries = []
+  console.log(entryElements)
+  for (const entryElement of entryElements) {
+    const resource = entryElement.querySelector(':scope resource *')
+    const fullUrl = entryElement.querySelector(':scope fullUrl')
+    entries.push({
+      resource,
+      fullUrl: fullUrl ? fullUrl.getAttribute('value') : undefined,
+    })
+  }
+  return entries
 }
 
 export const opOutcomeFromXmlResponse = raw => {

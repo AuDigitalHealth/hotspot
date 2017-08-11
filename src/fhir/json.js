@@ -54,7 +54,9 @@ export const extractJsonMetadata = async parsed => {
   }
 }
 
-export const extractCodesFromJSONExpansion = async expansion => {
+export const rawFromJsonResource = object => JSON.stringify(object)
+
+export const extractCodesFromJsonExpansion = async expansion => {
   if (!expansion.contains) return []
   return expansion.contains.map(code =>
     pick(code, 'system', 'code', 'display', 'abstract', 'inactive', 'version')

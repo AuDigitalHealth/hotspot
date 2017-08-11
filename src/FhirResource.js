@@ -6,8 +6,16 @@ import Narrative from './Narrative.js'
 import ValueSetExpansion from './ValueSetExpansion.js'
 import Bundle from './Bundle.js'
 import Raw from './Raw.js'
-import { extractJsonMetadata, extractRawJsonMetadata } from './fhir/json.js'
-import { extractXmlMetadata, extractRawXmlMetadata } from './fhir/xml.js'
+import {
+  extractJsonMetadata,
+  extractRawJsonMetadata,
+  rawFromJsonResource,
+} from './fhir/json.js'
+import {
+  extractXmlMetadata,
+  extractRawXmlMetadata,
+  rawFromXmlResource,
+} from './fhir/xml.js'
 import { valueSetExpansionPath } from './fhir/restApi.js'
 
 import './css/FhirResource.css'
@@ -22,14 +30,14 @@ class FhirResource extends Component {
     narrativeStyles: PropTypes.string,
     resource: PropTypes.oneOfType([
       PropTypes.object, // parsed JSON document fragment
-      PropTypes.instanceOf(Element), // parsed XML document fragment
+      PropTypes.instanceOf(Node), // parsed XML document fragment
       PropTypes.string, // unparsed string
     ]),
     format: PropTypes.oneOf([ 'json', 'xml' ]),
     raw: PropTypes.string, // supplied if resource is not raw string and raw tab is required
     fullUrl: PropTypes.string,
     className: PropTypes.string,
-    noTabSelectedAtLoad: PropTypes.boolean,
+    noTabSelectedAtLoad: PropTypes.bool,
     onLoad: PropTypes.func,
   }
 
@@ -74,7 +82,7 @@ class FhirResource extends Component {
   }
 
   async extractMetadata(props) {
-    if (props.resource instanceof Element) {
+    if (props.resource instanceof Node) {
       return extractXmlMetadata(props.resource)
     } else if (typeof props.resource === 'object') {
       return extractJsonMetadata(props.resource)
@@ -223,14 +231,16 @@ class FhirResource extends Component {
     } = this.props
     const { narrative, activeTab, expansion, bundle } = this.state
     // If the resource is provided raw, use that as our raw value. Otherwise,
-    // use the raw prop. If there is no raw prop and the resource is an object,
-    // create a JSON raw value from it.
+    // use the raw prop. If there is no raw prop, generate a raw value by
+    // serializing the object.
     const raw =
       typeof resource === 'string'
         ? resource
         : this.props.raw
           ? this.props.raw
-          : typeof resource === 'object' ? JSON.stringify(resource) : null
+          : resource instanceof Node
+            ? rawFromXmlResource(resource)
+            : rawFromJsonResource(resource)
     return (
       <div className='tab-content-wrapper'>
         {narrative
@@ -275,6 +285,8 @@ class FhirResource extends Component {
                 fhirServer={fhirServer}
                 fhirVersion={fhirVersion}
                 bundle={bundle}
+                format={format}
+                raw={raw}
                 onError={this.handleError}
               />
             </section>
