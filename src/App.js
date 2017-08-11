@@ -43,6 +43,7 @@ class App extends Component {
               src={agencyLogo}
               className='agency'
               alt='Australian Digital Health Agency'
+              height={70}
             />
           </a>
           <a href='https://www.csiro.au/'>
