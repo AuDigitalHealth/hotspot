@@ -54,7 +54,10 @@ class RemoteFhirResource extends Component {
   }
 
   handleUnsuccessfulResponse(response) {
-    const format = sniffFormat(response.headers['content-type'])
+    let format
+    try {
+      format = sniffFormat(response.headers['content-type'])
+    } catch (error) {}
     if (format === 'json') {
       const opOutcome = opOutcomeFromJsonResponse(response)
       if (opOutcome) throw opOutcome
