@@ -8,6 +8,7 @@ This is a pure client-side app that is configured to point to a FHIR endpoint.
 
 * Rendering of raw JSON and XML resources, including pretty-printing and syntax highlighting.
 * Rendering of narratives within resources, including proper whitelisting of HTML content as per the FHIR spec.
+* Support for basic CSS classes for narratives defined in the FHIR spec: http://hl7.org/fhir/STU3/narrative.html#css
 * Support for smart translation of link hrefs within narratives, to ensure appropriate behaviour when following absolute and relative links.
 * Support for a custom stylesheet that can be used to override styles within narratives.
 * Rendering of ValueSet expansions, including the implicit ValueSet within each CodeSystem.

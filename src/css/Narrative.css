@@ -1,0 +1,67 @@
+/*
+ * Mandatory narrative styling from the FHIR specification.
+ * See: http://hl7.org/fhir/STU3/narrative.html#css
+ */
+.narrative .bold {
+  font-weight: bold;
+}
+.narrative .italics {
+  font-style: italic;
+}
+.narrative .underline {
+  text-decoration: underline;
+}
+.narrative .strikethrough {
+  text-decoration: line-through;
+}
+.narrative .left {
+  text-align: left;
+}
+.narrative .right {
+  text-align: right;
+}
+.narrative .center {
+  text-align: center;
+}
+.narrative .justify {
+  text-align: justify;
+}
+.narrative .border-left {
+  border-left: 1px solid grey;
+}
+.narrative .border-right {
+  border-right: 1px solid grey;
+}
+.narrative .border-top {
+  border-top: 1px solid grey;
+}
+.narrative .border-bottom {
+  border-bottom: 1px solid grey;
+}
+.narrative .arabic {
+  list-style-type: decimal;
+}
+.narrative .little-roman {
+  list-style-type: lower-roman;
+}
+.narrative .big-roman {
+  list-style-type: upper-roman;
+}
+.narrative .little-alpha {
+  list-style-type: lower-alpha;
+}
+.narrative .big-alpha {
+  list-style-type: upper-alpha;
+}
+.narrative .disc {
+  list-style-type: disc;
+}
+.narrative .circle {
+  list-style-type: circle;
+}
+.narrative .square {
+  list-style-type: square;
+}
+.narrative .unlist {
+  list-style-type: none;
+}
