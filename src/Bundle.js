@@ -59,7 +59,13 @@ class Bundle extends Component {
   render() {
     const { fhirServer, fhirVersion, format } = this.props
     const { entries } = this.state
-    if (!entries) return <div className='bundle' />
+    if (!entries || (entries && entries.length === 0)) {
+      return (
+        <div className='bundle'>
+          <p>There are no entries within this Bundle.</p>
+        </div>
+      )
+    }
 
     return (
       <div className='bundle'>
