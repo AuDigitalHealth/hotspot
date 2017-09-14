@@ -1,6 +1,9 @@
 .fhir-resource .title,
 .fhir-resource .url,
 .fhir-resource .version,
+.fhir-resource .publisher,
+.fhir-resource .status,
+.fhir-resource .oid,
 .fhir-resource .value-set-uri {
   margin: 0 16px 6px;
 }

@@ -1,4 +1,5 @@
 import { OpOutcomeError } from '../errorTypes.js'
+import { oidPattern } from './common.js'
 
 export const extractRawXmlMetadata = async raw => {
   const parser = new DOMParser()
@@ -21,6 +22,21 @@ export const extractXmlMetadata = async doc => {
   metadata.url = url ? url.getAttribute('value') : undefined
   const version = resource.querySelector(':scope > version')
   metadata.version = version ? version.getAttribute('value') : undefined
+  const publisher = resource.querySelector(':scope > publisher')
+  metadata.publisher = publisher ? publisher.getAttribute('value') : undefined
+  const status = resource.querySelector(':scope > status')
+  metadata.status = status ? status.getAttribute('value') : undefined
+  // Get an OID value, if there is one in the `identifier` element.
+  const identifierSystem = resource.querySelector(':scope > identifier system')
+  const identifierValue = resource.querySelector(':scope > identifier value')
+  if (
+    identifierSystem &&
+    identifierSystem.getAttribute('value') === 'urn:ietf:rfc:3986' &&
+    identifierValue &&
+    identifierValue.getAttribute('value').match(oidPattern)
+  ) {
+    metadata.oid = oidPattern.exec(identifierValue.getAttribute('value'))[1]
+  }
   // Get the narrative.
   const narrative = resource.querySelector(':scope > text div')
   // Serialize the narrative XML back out to a plain string.

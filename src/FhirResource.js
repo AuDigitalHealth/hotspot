@@ -57,6 +57,9 @@ class FhirResource extends Component {
       title: undefined,
       url: undefined,
       version: undefined,
+      publisher: undefined,
+      resourceStatus: undefined,
+      oid: undefined,
       resourceType: undefined,
       narrative: undefined,
       valueSetUri: undefined,
@@ -141,7 +144,7 @@ class FhirResource extends Component {
   }
 
   renderMetadata() {
-    const { title, url, version } = this.state
+    const { title, url, version, publisher, resourceStatus, oid } = this.state
     return (
       <div className='metadata'>
         {title
@@ -163,6 +166,30 @@ class FhirResource extends Component {
                 <dt className='version'>Version</dt>
                 <dd>
                   {version}
+                </dd>
+              </div>
+            : null}
+          {publisher
+            ? <div>
+                <dt className='publisher'>Publisher</dt>
+                <dd>
+                  {publisher}
+                </dd>
+              </div>
+            : null}
+          {resourceStatus
+            ? <div>
+                <dt className='status'>Status</dt>
+                <dd>
+                  {resourceStatus}
+                </dd>
+              </div>
+            : null}
+          {oid
+            ? <div>
+                <dt className='oid'>OID</dt>
+                <dd>
+                  {oid}
                 </dd>
               </div>
             : null}

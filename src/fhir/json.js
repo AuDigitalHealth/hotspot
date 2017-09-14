@@ -1,6 +1,7 @@
 import pick from 'lodash.pick'
 
 import { OpOutcomeError } from '../errorTypes.js'
+import { oidPattern } from './common.js'
 
 export const extractRawJsonMetadata = async raw =>
   extractJsonMetadata(JSON.parse(raw))
@@ -25,6 +26,22 @@ export const extractJsonMetadata = async parsed => {
     }
     if (parsed.version) {
       metadata.version = parsed.version
+    }
+    if (parsed.publisher) {
+      metadata.publisher = parsed.publisher
+    }
+    if (parsed.status) {
+      metadata.resourceStatus = parsed.status
+    }
+    // Get an OID value, if there is one in the `identifier` element.
+    if (parsed.identifier) {
+      const ids = Array.isArray(parsed.identifier)
+        ? parsed.identifier
+        : [parsed.identifier]
+      const oidId = ids.find(
+        id => id.system === 'urn:ietf:rfc:3986' && id.value.match(oidPattern)
+      )
+      if (oidId) metadata.oid = oidPattern.exec(oidId.value)[1]
     }
     // Get the narrative.
     if (parsed.text && parsed.text.div) {
