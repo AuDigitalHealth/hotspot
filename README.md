@@ -54,3 +54,4 @@ narrative content.
 
 * Pagination of ValueSet expansions and Bundle entries.
 * Rendering of Parameters resources.
+* Support for Image References (http://hl7.org/fhir/STU3/narrative.html#id).
