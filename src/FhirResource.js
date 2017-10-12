@@ -134,65 +134,53 @@ class FhirResource extends Component {
   render() {
     const { className } = this.props
     const { status } = this.state
-    return status === 'loaded'
-      ? <div className={className}>
-          {this.renderMetadata()}
-          {this.renderTabs()}
-          {this.renderTabContent()}
-        </div>
-      : <div className={className} />
+    return status === 'loaded' ? (
+      <div className={className}>
+        {this.renderMetadata()}
+        {this.renderTabs()}
+        {this.renderTabContent()}
+      </div>
+    ) : (
+      <div className={className} />
+    )
   }
 
   renderMetadata() {
     const { title, url, version, publisher, resourceStatus, oid } = this.state
     return (
       <div className='metadata'>
-        {title
-          ? <h2 className='title'>
-              {title}
-            </h2>
-          : null}
+        {title ? <h2 className='title'>{title}</h2> : null}
         <dl className='metadata'>
-          {url
-            ? <div>
-                <dt className='url'>URI</dt>
-                <dd>
-                  {url}
-                </dd>
-              </div>
-            : null}
-          {version
-            ? <div>
-                <dt className='version'>Version</dt>
-                <dd>
-                  {version}
-                </dd>
-              </div>
-            : null}
-          {publisher
-            ? <div>
-                <dt className='publisher'>Publisher</dt>
-                <dd>
-                  {publisher}
-                </dd>
-              </div>
-            : null}
-          {resourceStatus
-            ? <div>
-                <dt className='status'>Status</dt>
-                <dd>
-                  {resourceStatus}
-                </dd>
-              </div>
-            : null}
-          {oid
-            ? <div>
-                <dt className='oid'>OID</dt>
-                <dd>
-                  {oid}
-                </dd>
-              </div>
-            : null}
+          {url ? (
+            <div>
+              <dt className='url'>URI</dt>
+              <dd>{url}</dd>
+            </div>
+          ) : null}
+          {version ? (
+            <div>
+              <dt className='version'>Version</dt>
+              <dd>{version}</dd>
+            </div>
+          ) : null}
+          {publisher ? (
+            <div>
+              <dt className='publisher'>Publisher</dt>
+              <dd>{publisher}</dd>
+            </div>
+          ) : null}
+          {resourceStatus ? (
+            <div>
+              <dt className='status'>Status</dt>
+              <dd>{resourceStatus}</dd>
+            </div>
+          ) : null}
+          {oid ? (
+            <div>
+              <dt className='oid'>OID</dt>
+              <dd>{oid}</dd>
+            </div>
+          ) : null}
         </dl>
       </div>
     )
@@ -205,44 +193,44 @@ class FhirResource extends Component {
     return (
       <nav>
         <ol>
-          {narrative
-            ? <li
+          {narrative ? (
+            <li
               onClick={() => this.setActiveTab('narrative')}
               className={activeTab === 'narrative' ? 'active' : ''}
-              >
-                Narrative
-              </li>
-            : null}
-          {expansion
-            ? <li
+            >
+              Narrative
+            </li>
+          ) : null}
+          {expansion ? (
+            <li
               onClick={() => this.setActiveTab('expansion')}
               className={activeTab === 'expansion' ? 'active' : ''}
-              >
-                Expansion
-              </li>
-            : null}
-          {bundle
-            ? <li
+            >
+              Expansion
+            </li>
+          ) : null}
+          {bundle ? (
+            <li
               onClick={() => this.setActiveTab('bundle')}
               className={activeTab === 'bundle' ? 'active' : ''}
-              >
-                Bundle
-              </li>
-            : null}
+            >
+              Bundle
+            </li>
+          ) : null}
           <li
             onClick={() => this.setActiveTab('raw')}
             className={activeTab === 'raw' ? 'active' : ''}
           >
             {format ? format.toUpperCase() : undefined}
           </li>
-          {fullUrl
-            ? <Link to={fullUrl.replace(fhirServer, '')}>Full Resource</Link>
-            : null}
-          {valueSetUri && !expansion
-            ? <Link to={valueSetPath} className='link'>
-                Expansion
-              </Link>
-            : null}
+          {fullUrl ? (
+            <Link to={fullUrl.replace(fhirServer, '')}>Full Resource</Link>
+          ) : null}
+          {valueSetUri && !expansion ? (
+            <Link to={valueSetPath} className='link'>
+              Expansion
+            </Link>
+          ) : null}
         </ol>
       </nav>
     )
@@ -270,65 +258,66 @@ class FhirResource extends Component {
             : rawFromJsonResource(resource)
     return (
       <div className='tab-content-wrapper'>
-        {narrative
-          ? <section
+        {narrative ? (
+          <section
             className={
-                activeTab === 'narrative'
-                  ? 'tab-content'
-                  : 'tab-content tab-content-hidden'
-              }
-            >
-              <Narrative
-                content={narrative}
-                stylesPath={narrativeStyles}
-                fhirServer={fhirServer}
-                onError={this.handleError}
-              />
-            </section>
-          : null}
-        {expansion
-          ? <section
+              activeTab === 'narrative'
+                ? 'tab-content'
+                : 'tab-content tab-content-hidden'
+            }
+          >
+            <Narrative
+              content={narrative}
+              stylesPath={narrativeStyles}
+              fhirServer={fhirServer}
+              onError={this.handleError}
+            />
+          </section>
+        ) : null}
+        {expansion ? (
+          <section
             className={
-                activeTab === 'expansion'
-                  ? 'tab-content'
-                  : 'tab-content tab-content-hidden'
-              }
-            >
-              <ValueSetExpansion
-                expansion={expansion}
-                onError={this.handleError}
-              />
-            </section>
-          : null}
-        {bundle
-          ? <section
+              activeTab === 'expansion'
+                ? 'tab-content'
+                : 'tab-content tab-content-hidden'
+            }
+          >
+            <ValueSetExpansion
+              expansion={expansion}
+              onError={this.handleError}
+            />
+          </section>
+        ) : null}
+        {bundle ? (
+          <section
             className={
-                activeTab === 'bundle'
-                  ? 'tab-content'
-                  : 'tab-content tab-content-hidden'
-              }
-            >
-              <Bundle
-                fhirServer={fhirServer}
-                fhirVersion={fhirVersion}
-                bundle={bundle}
-                format={format}
-                raw={raw}
-                onError={this.handleError}
-              />
-            </section>
-          : null}
-        {raw
-          ? <section
+              activeTab === 'bundle'
+                ? 'tab-content'
+                : 'tab-content tab-content-hidden'
+            }
+          >
+            <Bundle
+              fhirServer={fhirServer}
+              fhirVersion={fhirVersion}
+              narrativeStyles={narrativeStyles}
+              bundle={bundle}
+              format={format}
+              raw={raw}
+              onError={this.handleError}
+            />
+          </section>
+        ) : null}
+        {raw ? (
+          <section
             className={
-                activeTab === 'raw'
-                  ? 'tab-content'
-                  : 'tab-content tab-content-hidden'
-              }
-            >
-              <Raw content={raw} format={format} onError={this.handleError} />
-            </section>
-          : null}
+              activeTab === 'raw'
+                ? 'tab-content'
+                : 'tab-content tab-content-hidden'
+            }
+          >
+            <Raw content={raw} format={format} onError={this.handleError} />
+          </section>
+        ) : null}
       </div>
     )
   }

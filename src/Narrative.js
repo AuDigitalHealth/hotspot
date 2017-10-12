@@ -6,6 +6,8 @@ import _ from 'lodash'
 
 import { translateHref } from './fhir/restApi.js'
 
+import './css/Narrative.css'
+
 // Renders the XHTML narrative content from a FHIR resource, optionally
 // applying a custom stylesheet.
 class Narrative extends Component {
@@ -113,18 +115,16 @@ class Narrative extends Component {
     // Narrative styles are added to a "scoped" style tag inside the narrative
     // div. This means that these styles are only applied to content within
     // this element.
-    const styleTag = styles
-      ? <style scoped>
-          {styles}
-        </style>
-      : null
+    const styleTag = styles ? <style scoped>{styles}</style> : null
 
-    const narrative = sanitizedContent
-      ? <div
+    const narrative = sanitizedContent ? (
+      <div
         className='narrative-content'
         dangerouslySetInnerHTML={{ __html: sanitizedContent }}
-        />
-      : <p>This FHIR resource does not have narrative content.</p>
+      />
+    ) : (
+      <p>This FHIR resource does not have narrative content.</p>
+    )
 
     return (
       <div className='narrative'>

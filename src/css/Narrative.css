@@ -1,3 +1,7 @@
+.narrative {
+  padding: 10px 0;
+}
+
 /*
  * Mandatory narrative styling from the FHIR specification.
  * See: http://hl7.org/fhir/STU3/narrative.html#css

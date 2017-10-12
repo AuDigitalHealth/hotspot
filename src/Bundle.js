@@ -15,6 +15,7 @@ class Bundle extends Component {
   static propTypes = {
     fhirServer: PropTypes.string.isRequired,
     fhirVersion: PropTypes.string.isRequired,
+    narrativeStyles: PropTypes.string,
     bundle: PropTypes.oneOfType([
       PropTypes.object, // parsed JSON document fragment
       PropTypes.instanceOf(Node), // parsed XML document fragment
@@ -57,7 +58,7 @@ class Bundle extends Component {
   }
 
   render() {
-    const { fhirServer, fhirVersion, format } = this.props
+    const { fhirServer, fhirVersion, narrativeStyles, format } = this.props
     const { entries } = this.state
     if (!entries || (entries && entries.length === 0)) {
       return (
@@ -79,6 +80,7 @@ class Bundle extends Component {
               <FhirResource
                 fhirServer={fhirServer}
                 fhirVersion={fhirVersion}
+                narrativeStyles={narrativeStyles}
                 resource={entry.resource}
                 fullUrl={entry.fullUrl}
                 format={format}
