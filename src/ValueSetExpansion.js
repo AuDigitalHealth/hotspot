@@ -68,71 +68,71 @@ class ValueSetExpansion extends Component {
       columns
     )
     const headers = (
-      <tr>
-        {columns.map((column, i) =>
-          <th key={i}>
-            {column}
-          </th>
-        )}
-      </tr>
+      <tr>{columns.map((column, i) => <th key={i}>{column}</th>)}</tr>
     )
-    const codeRows = codes.map((code, i) =>
-      <tr key={i}>
-        {code.system
-          ? <td>
-              <Link to={codeSystemSearchPath(code.system)}>
-                {code.system}
-              </Link>
-            </td>
-          : null}
-        {code.code
-          ? <td>
-              {code.code && code.system && code.version
-                ? <Link to={lookupPath(code.system, code.code, code.version)}>
-                    {code.code}
-                  </Link>
-                : code.code && code.system
-                  ? <Link to={lookupPath(code.system, code.code)}>
-                      {code.code}
-                    </Link>
-                  : code.code}
-            </td>
-          : null}
-        {code.display
-          ? <td>
-              {code.display}
-            </td>
-          : null}
-        {code.abstract
-          ? <td>
-              {code.abstract}
-            </td>
-          : null}
-        {code.inactive
-          ? <td>
-              {code.inactive}
-            </td>
-          : null}
-        {code.version
-          ? <td>
-              {code.version}
-            </td>
-          : null}
-      </tr>
-    )
+    const codeRows = this.renderCodeRows(codes, columns)
 
     return (
       <div className='value-set-expansion'>
         <table className='table'>
-          <thead>
-            {headers}
-          </thead>
-          <tbody>
-            {codeRows}
-          </tbody>
+          <thead>{headers}</thead>
+          <tbody>{codeRows}</tbody>
         </table>
       </div>
     )
+  }
+
+  renderCodeRows(codes, columns) {
+    return codes.map((code, i) => (
+      <tr key={i}>
+        {code.system ? (
+          <td>
+            <Link to={codeSystemSearchPath(code.system)}>{code.system}</Link>
+          </td>
+        ) : (
+          this.renderEmptyCellOrNull(columns, 'system')
+        )}
+        {code.code ? (
+          <td>
+            {code.code && code.system && code.version ? (
+              <Link to={lookupPath(code.system, code.code, code.version)}>
+                {code.code}
+              </Link>
+            ) : code.code && code.system ? (
+              <Link to={lookupPath(code.system, code.code)}>{code.code}</Link>
+            ) : (
+              code.code
+            )}
+          </td>
+        ) : (
+          this.renderEmptyCellOrNull(columns, 'code')
+        )}
+        {code.display ? (
+          <td>{code.display}</td>
+        ) : (
+          this.renderEmptyCellOrNull(columns, 'display')
+        )}
+        {code.abstract ? (
+          <td>{code.abstract.toString()}</td>
+        ) : (
+          this.renderEmptyCellOrNull(columns, 'abstract')
+        )}
+        {code.inactive ? (
+          <td>{code.inactive.toString()}</td>
+        ) : (
+          this.renderEmptyCellOrNull(columns, 'inactive')
+        )}
+        {code.version ? (
+          <td>{code.version}</td>
+        ) : (
+          this.renderEmptyCellOrNull(columns, 'version')
+        )}
+      </tr>
+    ))
+  }
+
+  renderEmptyCellOrNull(columns, column) {
+    return columns.includes(column) ? <td /> : null
   }
 }
 
