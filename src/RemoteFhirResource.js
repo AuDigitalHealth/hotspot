@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import http from 'axios'
 
 import FhirResource from './FhirResource.js'
-import Error from './Error.js'
+import ErrorMessage from './ErrorMessage.js'
 import { sniffFormat } from './fhir/restApi.js'
 import { opOutcomeFromJsonResponse } from './fhir/json.js'
 import { opOutcomeFromXmlResponse } from './fhir/xml.js'
@@ -128,7 +128,7 @@ class RemoteFhirResource extends Component {
           </div>
         )
       case 'error':
-        return <Error error={error} />
+        return <ErrorMessage error={error} />
       default:
         return <div className='remote-fhir-resource' />
     }
