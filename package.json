@@ -16,6 +16,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "dockerize": "bash scripts/dockerize.sh",
+    "push-docker": "bash scripts/pushDockerImage.sh",
     "test": "react-scripts test --env=jsdom",
     "test-ci": "CI=true react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
@@ -36,12 +38,7 @@
     "xmldom": "^0.1.27"
   },
   "jest": {
-    "snapshotSerializers": [
-      "enzyme-to-json/serializer"
-    ]
+    "snapshotSerializers": ["enzyme-to-json/serializer"]
   },
-  "pre-commit": [
-    "lint",
-    "test-ci"
-  ]
+  "pre-commit": ["lint", "test-ci"]
 }
