@@ -1,5 +1,9 @@
 #!/bin/bash
-
-docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+set -e
+if [[ -v DOCKER_USER && -v DOCKER_PASSWORD ]]; then
+  docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+fi
 docker push $DOCKER_IMAGE
-docker logout
+if [[ -v DOCKER_USER && -v DOCKER_PASSWORD ]]; then
+  docker logout
+fi
