@@ -7,8 +7,11 @@ import registerServiceWorker from './registerServiceWorker'
 import './css/base.css'
 import './css/index.css'
 
+const configUrl = document
+  .querySelector('meta[name="config"]')
+  .getAttribute('value')
 http
-  .get('/config.json')
+  .get(configUrl)
   .then(response => {
     const config = response.data
     ReactDOM.render(<App config={config} />, document.getElementById('root'))
