@@ -39,7 +39,7 @@ export const extractJsonMetadata = async parsed => {
         ? parsed.identifier
         : [parsed.identifier]
       const oidId = ids.find(
-        id => id.system === 'urn:ietf:rfc:3986' && id.value.match(oidPattern)
+        id => id.system === 'urn:ietf:rfc:3986' && id.value.match(oidPattern),
       )
       if (oidId) metadata.oid = oidPattern.exec(oidId.value)[1]
     }
@@ -66,7 +66,7 @@ export const extractJsonMetadata = async parsed => {
     return metadata
   } catch (error) {
     throw new Error(
-      `There was a problem parsing the JSON FHIR resource: "${error.message}"`
+      `There was a problem parsing the JSON FHIR resource: "${error.message}"`,
     )
   }
 }
@@ -76,7 +76,7 @@ export const rawFromJsonResource = object => JSON.stringify(object)
 export const extractCodesFromJsonExpansion = async expansion => {
   if (!expansion.contains) return []
   return expansion.contains.map(code =>
-    pick(code, 'system', 'code', 'display', 'abstract', 'inactive', 'version')
+    pick(code, 'system', 'code', 'display', 'abstract', 'inactive', 'version'),
   )
 }
 
@@ -98,7 +98,7 @@ export const opOutcomeFromJsonResponse = response => {
       'details',
       'diagnostics',
       'location',
-      'expression'
-    )
+      'expression',
+    ),
   )
 }

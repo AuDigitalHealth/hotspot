@@ -67,7 +67,7 @@ describe('extractRawJsonMetadata', () => {
         publisher: 'Nationwide Health Information Network (NHIN)',
       },
     ],
-    [ 'CodeSystem-search.json', { resourceType: 'Bundle', title: 'Bundle' } ],
+    ['CodeSystem-search.json', { resourceType: 'Bundle', title: 'Bundle' }],
   ]
   for (const resource of jsonResources) {
     it(`should extract correct metadata for ${resource[0]}`, async () => {
@@ -83,8 +83,8 @@ describe('extractRawJsonMetadata', () => {
             'valueSetUri',
             'publisher',
             'resourceStatus',
-            'oid'
-          )
+            'oid',
+          ),
         ).toEqual(resource[1])
       })
     })

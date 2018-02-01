@@ -62,21 +62,21 @@ class Bundle extends Component {
     const { entries } = this.state
     if (!entries || (entries && entries.length === 0)) {
       return (
-        <div className='bundle'>
+        <div className="bundle">
           <p>There are no entries within this Bundle.</p>
         </div>
       )
     }
 
     return (
-      <div className='bundle'>
+      <div className="bundle">
         {entries.map((entry, i) => {
           const raw =
             entry.resource instanceof Node
               ? rawFromXmlResource(entry.resource)
               : rawFromJsonResource(entry.resource)
           return (
-            <div key={i} className='entry'>
+            <div key={i} className="entry">
               <FhirResource
                 fhirServer={fhirServer}
                 fhirVersion={fhirVersion}
@@ -85,7 +85,7 @@ class Bundle extends Component {
                 fullUrl={entry.fullUrl}
                 format={format}
                 raw={raw}
-                className='fhir-resource fhir-resource-inline'
+                className="fhir-resource fhir-resource-inline"
                 noTabSelectedAtLoad
                 onError={this.handleError}
               />

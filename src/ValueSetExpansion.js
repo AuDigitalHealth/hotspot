@@ -50,22 +50,22 @@ class ValueSetExpansion extends Component {
     this.extractCodes(this.props.expansion)
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps() {
     this.extractCodes(this.props.expansion)
   }
 
   render() {
     const { codes } = this.state
-    if (!codes) return <div className='value-set-expansion' />
+    if (!codes) return <div className="value-set-expansion" />
     let columns = []
 
     for (const code of codes) {
-      columns = [ ...columns, ...Object.keys(code) ]
+      columns = [...columns, ...Object.keys(code)]
     }
     // Whitelist code attributes and get them in the preferred order.
     columns = intersection(
-      [ 'system', 'code', 'display', 'abstract', 'inactive', 'version' ],
-      columns
+      ['system', 'code', 'display', 'abstract', 'inactive', 'version'],
+      columns,
     )
     const headers = (
       <tr>{columns.map((column, i) => <th key={i}>{column}</th>)}</tr>
@@ -73,8 +73,8 @@ class ValueSetExpansion extends Component {
     const codeRows = this.renderCodeRows(codes, columns)
 
     return (
-      <div className='value-set-expansion'>
-        <table className='table'>
+      <div className="value-set-expansion">
+        <table className="table">
           <thead>{headers}</thead>
           <tbody>{codeRows}</tbody>
         </table>

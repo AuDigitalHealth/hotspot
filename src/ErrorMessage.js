@@ -26,41 +26,41 @@ class ErrorMessage extends Component {
 
     if (error.issue) {
       return (
-        <div className='error'>
+        <div className="error">
           <strong>Error</strong>
           {error.issue.details && error.issue.details.display ? (
-            <p className='details'>{error.issue.details.display}</p>
+            <p className="details">{error.issue.details.display}</p>
           ) : (
             undefined
           )}
           {error.issue.diagnostics ? (
-            <p className='diagnostics'>{error.issue.diagnostics}</p>
+            <p className="diagnostics">{error.issue.diagnostics}</p>
           ) : (
             undefined
           )}
           {error.issue.severity ? (
-            <p className='severity'>
+            <p className="severity">
               <strong>Severity:</strong> {error.issue.severity}
             </p>
           ) : (
             undefined
           )}
           {error.issue.code ? (
-            <p className='code'>
+            <p className="code">
               <strong>Error code:</strong> {error.issue.code}
             </p>
           ) : (
             undefined
           )}
           {error.issue.location ? (
-            <p className='location'>
+            <p className="location">
               <strong>Location:</strong> {error.issue.location}
             </p>
           ) : (
             undefined
           )}
           {error.issue.expression ? (
-            <p className='expression'>
+            <p className="expression">
               <strong>Expression:</strong> {error.issue.expression}
             </p>
           ) : (
@@ -70,13 +70,13 @@ class ErrorMessage extends Component {
       )
     } else if (error.message) {
       return (
-        <div className='error'>
+        <div className="error">
           <strong>Error</strong>
-          <p className='message'>{error.message}</p>
+          <p className="message">{error.message}</p>
         </div>
       )
     } else {
-      return <div className='error' />
+      return <div className="error" />
     }
   }
 }

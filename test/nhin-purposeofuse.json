@@ -93,7 +93,8 @@
                 {
                   "code": "HMARKT",
                   "equivalence": "narrower",
-                  "comment": "Not clear how much difference there is between 'marketing' and 'healthcare marketing'"
+                  "comment":
+                    "Not clear how much difference there is between 'marketing' and 'healthcare marketing'"
                 }
               ]
             },
@@ -153,7 +154,8 @@
                 {
                   "code": "HRESCH",
                   "equivalence": "narrower",
-                  "comment": "Not clear how much difference there is between 'research' and 'healthcare research'"
+                  "comment":
+                    "Not clear how much difference there is between 'research' and 'healthcare research'"
                 }
               ]
             },
@@ -214,12 +216,14 @@
       "telecom": [
         {
           "system": "url",
-          "value": "https://www.healthit.gov/sites/default/files/nhin-authorization-framework-production-specification-v2.0-1.pdf"
+          "value":
+            "https://www.healthit.gov/sites/default/files/nhin-authorization-framework-production-specification-v2.0-1.pdf"
         }
       ]
     }
   ],
-  "description": "This value set is suitable for use with the provenance resource. It is derived from, but not compatible with, the HL7 v3 Purpose of use Code system.",
+  "description":
+    "This value set is suitable for use with the provenance resource. It is derived from, but not compatible with, the HL7 v3 Purpose of use Code system.",
   "compose": {
     "include": [
       {

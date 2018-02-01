@@ -36,21 +36,21 @@ class App extends Component {
     const { config } = this.props
 
     return (
-      <div className='app'>
+      <div className="app">
         <header>
-          <a href='https://www.digitalhealth.gov.au/'>
+          <a href="https://www.digitalhealth.gov.au/">
             <img
               src={agencyLogo}
-              className='agency'
-              alt='Australian Digital Health Agency'
+              className="agency"
+              alt="Australian Digital Health Agency"
               height={70}
             />
           </a>
-          <a href='https://www.csiro.au/'>
-            <img src={csiroLogo} className='csiro' alt='CSIRO' />
+          <a href="https://www.csiro.au/">
+            <img src={csiroLogo} className="csiro" alt="CSIRO" />
           </a>
           <h1>
-            <a href='https://www.healthterminologies.gov.au/'>
+            <a href="https://www.healthterminologies.gov.au/">
               National Clinical Terminology Service
             </a>
           </h1>
@@ -59,23 +59,25 @@ class App extends Component {
           <Router>
             <Switch>
               <Route
-                path='/:path'
-                render={({ location }) =>
+                path="/:path"
+                render={({ location }) => (
                   <RemoteFhirResource
                     path={location.pathname}
                     query={location.search}
                     onLoad={this.handleLoad}
                     {...config}
-                  />}
+                  />
+                )}
               />
               <Route
-                render={() =>
-                  <div className='fhir-resource'>
+                render={() => (
+                  <div className="fhir-resource">
                     <p>
                       Please provide a path to a valid FHIR resource within the
                       URL.
                     </p>
-                  </div>}
+                  </div>
+                )}
               />
             </Switch>
           </Router>

@@ -48,7 +48,7 @@ describe('Narrative', () => {
       const contentDiv = wrapper.find('.narrative-content').first()
       const content = contentDiv.prop('dangerouslySetInnerHTML')['__html']
       expect(content).toBe(
-        '<div><a href="http://somedomain.com/some/thing">Link</a></div>'
+        '<div><a href="http://somedomain.com/some/thing">Link</a></div>',
       )
     })
   })
@@ -58,7 +58,7 @@ describe('Narrative', () => {
       const contentDiv = wrapper.find('.narrative-content').first()
       const contentDoc = new DOMParser().parseFromString(
         contentDiv.prop('dangerouslySetInnerHTML')['__html'],
-        'application/xml'
+        'application/xml',
       )
       const link = contentDoc.querySelector('a')
       return link.href
@@ -98,7 +98,7 @@ describe('Narrative', () => {
       }
       const wrapper = shallow(<Narrative {...props} />)
       expect(getLinkHref(wrapper)).toBe(
-        'http://hl7.org/fhir/STU3/something.html'
+        'http://hl7.org/fhir/STU3/something.html',
       )
     })
 

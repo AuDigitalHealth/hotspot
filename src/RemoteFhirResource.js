@@ -16,8 +16,12 @@ class RemoteFhirResource extends Component {
     fhirServer: PropTypes.string.isRequired,
     fhirVersion: PropTypes.string.isRequired,
     narrativeStyles: PropTypes.string,
+    stripFormatParam: PropTypes.bool,
     onLoad: PropTypes.func,
     onError: PropTypes.func,
+  }
+  static defaultProps = {
+    stripFormatParam: false,
   }
 
   constructor(props) {
@@ -33,7 +37,7 @@ class RemoteFhirResource extends Component {
       () =>
         this.getResource(props)
           .then(resource => this.setState({ ...resource, status: 'loaded' }))
-          .catch(error => this.handleError(error))
+          .catch(error => this.handleError(error)),
     )
   }
 
@@ -57,7 +61,7 @@ class RemoteFhirResource extends Component {
     let format
     try {
       format = sniffFormat(response.headers['content-type'])
-    } catch (error) {}
+    } catch (error) {} // eslint-disable-line no-empty
     if (format === 'json') {
       const opOutcome = opOutcomeFromJsonResponse(response)
       if (opOutcome) throw opOutcome
@@ -67,7 +71,7 @@ class RemoteFhirResource extends Component {
     }
     if (response.status === 404) {
       throw new Error(
-        `The resource you requested was not found: "${this.props.path}"`
+        `The resource you requested was not found: "${this.props.path}"`,
       )
     } else {
       throw new Error(response.statusText || response.status)
@@ -88,7 +92,7 @@ class RemoteFhirResource extends Component {
         () => ({ error, status: 'error' }),
         () => {
           throw error
-        }
+        },
       )
     }
   }
@@ -108,13 +112,13 @@ class RemoteFhirResource extends Component {
     switch (status) {
       case 'loading':
         return (
-          <div className='remote-fhir-resource'>
-            <p className='loading'>Loading...</p>
+          <div className="remote-fhir-resource">
+            <p className="loading">Loading...</p>
           </div>
         )
       case 'loaded':
         return (
-          <div className='remote-fhir-resource'>
+          <div className="remote-fhir-resource">
             <FhirResource
               fhirServer={fhirServer}
               fhirVersion={fhirVersion}
@@ -130,7 +134,7 @@ class RemoteFhirResource extends Component {
       case 'error':
         return <ErrorMessage error={error} />
       default:
-        return <div className='remote-fhir-resource' />
+        return <div className="remote-fhir-resource" />
     }
   }
 }

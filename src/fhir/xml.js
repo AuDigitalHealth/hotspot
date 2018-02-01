@@ -94,7 +94,6 @@ export const extractCodesFromXMLExpansion = async expansion => {
 export const extractEntriesFromXmlBundle = async bundle => {
   const entryElements = bundle.querySelectorAll(':scope entry')
   const entries = []
-  console.log(entryElements)
   for (const entryElement of entryElements) {
     const resource = entryElement.querySelector(':scope resource *')
     const fullUrl = entryElement.querySelector(':scope fullUrl')

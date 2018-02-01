@@ -10,7 +10,7 @@ import 'highlight.js/styles/docco.css'
 class Raw extends Component {
   static propTypes = {
     content: PropTypes.string.isRequired,
-    format: PropTypes.oneOf([ 'json', 'xml' ]).isRequired,
+    format: PropTypes.oneOf(['json', 'xml']).isRequired,
     onError: PropTypes.func,
   }
 
@@ -37,7 +37,7 @@ class Raw extends Component {
         this.setState(() => ({
           prettyContent: Raw.prettifyContent(
             nextProps.content,
-            nextProps.format
+            nextProps.format,
           ),
         }))
       } catch (error) {
@@ -61,10 +61,8 @@ class Raw extends Component {
     const { prettyContent } = this.state
 
     return (
-      <div className='raw'>
-        <Highlight className={format}>
-          {prettyContent}
-        </Highlight>
+      <div className="raw">
+        <Highlight className={format}>{prettyContent}</Highlight>
       </div>
     )
   }

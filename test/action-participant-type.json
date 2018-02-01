@@ -8,7 +8,8 @@
   },
   "extension": [
     {
-      "url": "http://hl7.org/fhir/StructureDefinition/structuredefinition-ballot-status",
+      "url":
+        "http://hl7.org/fhir/StructureDefinition/structuredefinition-ballot-status",
       "valueString": "Informative"
     },
     {

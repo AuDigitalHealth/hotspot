@@ -24,7 +24,7 @@ export const sniffFormat = contentType => {
   // - application/json+fhir (FHIR DSTU2)
   if (
     contentType.match(
-      /(application\/json|application\/fhir\+json|application\/json\+fhir)/
+      /(application\/json|application\/fhir\+json|application\/json\+fhir)/,
     )
   ) {
     return 'json'
@@ -35,7 +35,7 @@ export const sniffFormat = contentType => {
     // - application/json+xml (FHIR DSTU2)
   } else if (
     contentType.match(
-      /(text\/xml|application\/xml|application\/fhir\+xml|application\/xml\+fhir)/
+      /(text\/xml|application\/xml|application\/fhir\+xml|application\/xml\+fhir)/,
     )
   ) {
     return 'xml'

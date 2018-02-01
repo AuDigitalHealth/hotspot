@@ -40,7 +40,7 @@ class Narrative extends Component {
       // Check that the Content-Type of the stylesheet response is `text/css`.
       if (!contentType.match(/text\/css/)) {
         throw Error(
-          `Narrative stylesheet had unexpected format: "${contentType}"`
+          `Narrative stylesheet had unexpected format: "${contentType}"`,
         )
       }
       const styles = response.data
@@ -59,7 +59,7 @@ class Narrative extends Component {
       // Allow all attributes (except for event-related, see later filter).
       allowedAttributes: false,
       // Allow data URLs.
-      allowedSchemes: [ 'http', 'https', 'ftp', 'mailto', 'data' ],
+      allowedSchemes: ['http', 'https', 'ftp', 'mailto', 'data'],
       transformTags: {
         // Filter out event-related attributes.
         '*': (tagName, attribs) => ({
@@ -104,8 +104,8 @@ class Narrative extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     return (
       this.props.content !== nextProps.content ||
-      this.props.sanitizedContent !== nextState.sanitizedContent ||
-      this.props.styles !== nextState.styles
+      this.state.sanitizedContent !== nextState.sanitizedContent ||
+      this.state.styles !== nextState.styles
     )
   }
 
@@ -119,7 +119,7 @@ class Narrative extends Component {
 
     const narrative = sanitizedContent ? (
       <div
-        className='narrative-content'
+        className="narrative-content"
         dangerouslySetInnerHTML={{ __html: sanitizedContent }}
       />
     ) : (
@@ -127,7 +127,7 @@ class Narrative extends Component {
     )
 
     return (
-      <div className='narrative'>
+      <div className="narrative">
         {styleTag}
         {narrative}
       </div>

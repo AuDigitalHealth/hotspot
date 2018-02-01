@@ -16,5 +16,5 @@ http
     const config = response.data
     ReactDOM.render(<App config={config} />, document.getElementById('root'))
   })
-  .catch(error => console.error(error))
+  .catch(error => console.error(error)) // eslint-disable-line no-console
 registerServiceWorker()

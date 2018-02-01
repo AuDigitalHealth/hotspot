@@ -33,12 +33,13 @@ class FhirResource extends Component {
       PropTypes.instanceOf(Node), // parsed XML document fragment
       PropTypes.string, // unparsed string
     ]),
-    format: PropTypes.oneOf([ 'json', 'xml' ]),
+    format: PropTypes.oneOf(['json', 'xml']),
     raw: PropTypes.string, // supplied if resource is not raw string and raw tab is required
     fullUrl: PropTypes.string,
     className: PropTypes.string,
     noTabSelectedAtLoad: PropTypes.bool,
     onLoad: PropTypes.func,
+    onError: PropTypes.func,
   }
 
   static defaultProps = {
@@ -77,10 +78,10 @@ class FhirResource extends Component {
           })
           .then(metadata => this.updateActiveTab(metadata))
           .then(metadata =>
-            this.setState({ ...emptyMetadata, ...metadata, status: 'loaded' })
+            this.setState({ ...emptyMetadata, ...metadata, status: 'loaded' }),
           )
           .catch(error => this.handleError(error))
-      }
+      },
     )
   }
 
@@ -101,7 +102,7 @@ class FhirResource extends Component {
   async updateActiveTab(metadata) {
     // Skip setting of active tab if not already explicitly selected, if the
     // `noTabSelectedAtLoad` option is set.
-    if (this.props.noTabSelectedAtLoad && !this.props.activeTab) return metadata
+    if (this.props.noTabSelectedAtLoad && !this.state.activeTab) return metadata
     return {
       ...metadata,
       activeTab: metadata.narrative
@@ -115,7 +116,7 @@ class FhirResource extends Component {
       () =>
         this.props.noTabSelectedAtLoad && this.state.activeTab === tabName
           ? { activeTab: undefined }
-          : { activeTab: tabName }
+          : { activeTab: tabName },
     )
   }
 
@@ -148,36 +149,36 @@ class FhirResource extends Component {
   renderMetadata() {
     const { title, url, version, publisher, resourceStatus, oid } = this.state
     return (
-      <div className='metadata'>
-        {title ? <h2 className='title'>{title}</h2> : null}
-        <dl className='metadata'>
+      <div className="metadata">
+        {title ? <h2 className="title">{title}</h2> : null}
+        <dl className="metadata">
           {url ? (
             <div>
-              <dt className='url'>URI</dt>
+              <dt className="url">URI</dt>
               <dd>{url}</dd>
             </div>
           ) : null}
           {version ? (
             <div>
-              <dt className='version'>Version</dt>
+              <dt className="version">Version</dt>
               <dd>{version}</dd>
             </div>
           ) : null}
           {publisher ? (
             <div>
-              <dt className='publisher'>Publisher</dt>
+              <dt className="publisher">Publisher</dt>
               <dd>{publisher}</dd>
             </div>
           ) : null}
           {resourceStatus ? (
             <div>
-              <dt className='status'>Status</dt>
+              <dt className="status">Status</dt>
               <dd>{resourceStatus}</dd>
             </div>
           ) : null}
           {oid ? (
             <div>
-              <dt className='oid'>OID</dt>
+              <dt className="oid">OID</dt>
               <dd>{oid}</dd>
             </div>
           ) : null}
@@ -227,7 +228,7 @@ class FhirResource extends Component {
             <Link to={fullUrl.replace(fhirServer, '')}>Full Resource</Link>
           ) : null}
           {valueSetUri && !expansion ? (
-            <Link to={valueSetPath} className='link'>
+            <Link to={valueSetPath} className="link">
               Expansion
             </Link>
           ) : null}
@@ -257,7 +258,7 @@ class FhirResource extends Component {
             ? rawFromXmlResource(resource)
             : rawFromJsonResource(resource)
     return (
-      <div className='tab-content-wrapper'>
+      <div className="tab-content-wrapper">
         {narrative ? (
           <section
             className={
