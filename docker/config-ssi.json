@@ -1,5 +1,6 @@
 {
   "fhirServer": "<!--#echo var="hotspot_fhir_server" -->",
   "fhirVersion": "<!--#echo var="hotspot_fhir_version" -->",
-  "narrativeStyles": "<!--#echo var="hotspot_narrative_styles" -->"
+  "narrativeStyles": "<!--#echo var="hotspot_narrative_styles" -->",
+  "stripFormatParam": "<!--#echo var="hotspot_strip_format_param" -->"
 }

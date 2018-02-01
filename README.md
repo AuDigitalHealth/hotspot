@@ -55,10 +55,11 @@ The Docker image can be configured using the following environment variables:
   The path component of the URL is appended to this value upon each request, e.g.
   if your `HOTSPOT_FHIR_SERVER` was http://ontoserver.csiro.au/stu3-latest, then a request
   with the path `/CodeSystem/some-code-system` would retrieve the resource from
-  http://ontoserver.csiro.au/stu3-latest/CodeSystem/some-code-system.
-* `HOTSPOT_FHIR_VERSION`: The version of FHIR (x.y.z) assumed to be in use by the FHIR server.
+  http://ontoserver.csiro.au/stu3-latest/CodeSystem/some-code-system. Defaults to `https://ontoserver.csiro.au/stu3-latest`.
+* `HOTSPOT_FHIR_VERSION`: The version of FHIR (x.y.z) assumed to be in use by the FHIR server. Defaults to `3.0.1`.
 * `HOTSPOT_NARRATIVE_STYLES`: A URL to a custom stylesheet to override styles within
   narrative content.
+* `HOTSPOT_STRIP_FORMAT_PARAM`: Strips the `_format` URL parameter when one is provided. Defaults to `false`.
 
 ##### Example Docker Compose file
 

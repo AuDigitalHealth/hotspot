@@ -16,12 +16,8 @@ class RemoteFhirResource extends Component {
     fhirServer: PropTypes.string.isRequired,
     fhirVersion: PropTypes.string.isRequired,
     narrativeStyles: PropTypes.string,
-    stripFormatParam: PropTypes.bool,
     onLoad: PropTypes.func,
     onError: PropTypes.func,
-  }
-  static defaultProps = {
-    stripFormatParam: false,
   }
 
   constructor(props) {

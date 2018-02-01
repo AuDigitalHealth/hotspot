@@ -1,8 +1,14 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  Redirect,
+} from 'react-router-dom'
 
 import RemoteFhirResource from './RemoteFhirResource.js'
+import { containsFormatParam, removeFormatParam } from './fhir/common.js'
 
 import agencyLogo from './img/agency.svg'
 import csiroLogo from './img/csiro.svg'
@@ -17,12 +23,22 @@ class App extends Component {
     config: {
       fhirServer: 'https://ontoserver.csiro.au/stu3-latest',
       fhirVersion: '3.0.1',
+      stripFormatParam: false,
     },
   }
 
   constructor(props) {
     super(props)
     this.state = {}
+  }
+
+  checkForFormatParam(location, render) {
+    const { config: { stripFormatParam } } = this.props
+    return stripFormatParam && containsFormatParam(location.search) ? (
+      <Redirect to={location.pathname + removeFormatParam(location.search)} />
+    ) : (
+      render
+    )
   }
 
   handleLoad(metadata) {
@@ -60,14 +76,17 @@ class App extends Component {
             <Switch>
               <Route
                 path="/:path"
-                render={({ location }) => (
-                  <RemoteFhirResource
-                    path={location.pathname}
-                    query={location.search}
-                    onLoad={this.handleLoad}
-                    {...config}
-                  />
-                )}
+                render={({ location }) =>
+                  this.checkForFormatParam(
+                    location,
+                    <RemoteFhirResource
+                      path={location.pathname}
+                      query={location.search}
+                      onLoad={this.handleLoad}
+                      {...config}
+                    />,
+                  )
+                }
               />
               <Route
                 render={() => (

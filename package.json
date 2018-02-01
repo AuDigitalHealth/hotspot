@@ -18,7 +18,7 @@
     "build": "react-scripts build",
     "dockerize": "bash scripts/dockerize.sh",
     "push-docker": "bash scripts/pushDockerImage.sh",
-    "test": "react-scripts test --env=jsdom",
+    "test": "react-scripts test --env=jsdom --verbose",
     "test-ci": "CI=true react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "lint": "eslint --max-warnings 0 src"
