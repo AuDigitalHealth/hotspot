@@ -132,6 +132,30 @@ class FhirResource extends Component {
     this.updateResource(nextProps)
   }
 
+  getUrlProtocol(fullUrl) {
+    return new RegExp('(http:\/\/|https:\/\/|\/|)([a-zA-Z0-9\\.-]+)').exec(fullUrl)[1];
+  }
+
+  getUrlHost(fullUrl) {
+    return new RegExp('(http:\/\/|https:\/\/|\/|)([a-zA-Z0-9\\.-]+)').exec(fullUrl)[2];
+  }
+
+  isCorrectFhirServer(fullUrl) {
+    var urlHost = this.getUrlHost(fullUrl);
+    var fhirHost = this.getUrlHost(this.props.fhirServer);
+    return urlHost == fhirHost;
+  }
+
+  toCorrectProtocol(fullUrl) {
+    var urlHost = this.getUrlHost(fullUrl);
+    var urlProtocol = this.getUrlProtocol(fullUrl);
+    var fhirProtocol = this.getUrlProtocol(this.props.fhirServer);
+    if (urlProtocol != fhirProtocol) {
+      return fullUrl.replace(urlProtocol + urlHost, fhirProtocol + urlHost);
+    }
+    return fullUrl;
+  }
+
   render() {
     const { className } = this.props
     const { status } = this.state
@@ -224,8 +248,8 @@ class FhirResource extends Component {
           >
             {format ? format.toUpperCase() : undefined}
           </li>
-          {fullUrl ? (
-            <Link to={fullUrl.replace(fhirServer, '')}>Full Resource</Link>
+          {fullUrl && this.isCorrectFhirServer(fullUrl) ? (
+            <Link to={this.toCorrectProtocol(fullUrl).replace(fhirServer, '')}>Full Resource</Link>
           ) : null}
           {valueSetUri && !expansion ? (
             <Link to={valueSetPath} className="link">
