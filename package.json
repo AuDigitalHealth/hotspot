@@ -22,7 +22,8 @@
     "test": "react-scripts test --env=jsdom --verbose",
     "test-ci": "CI=true react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "lint": "eslint --max-warnings 0 src"
+    "lint": "eslint --max-warnings 0 src",
+    "format-staged": "bash scripts/formatStagedFiles.sh"
   },
   "devDependencies": {
     "enzyme": "^3.2.0",
@@ -34,17 +35,13 @@
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-react-app": "^1.0.2",
     "pre-commit": "^1.2.2",
+    "prettier": "^1.10.2",
     "react-scripts": "^1.0.10",
     "react-test-renderer": "^16.2.0",
     "xmldom": "^0.1.27"
   },
   "jest": {
-    "snapshotSerializers": [
-      "enzyme-to-json/serializer"
-    ]
+    "snapshotSerializers": ["enzyme-to-json/serializer"]
   },
-  "pre-commit": [
-    "lint",
-    "test-ci"
-  ]
+  "pre-commit": ["lint", "format-staged", "test-ci"]
 }
