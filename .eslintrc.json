@@ -1,6 +1,6 @@
 {
   "parser": "babel-eslint",
-  "plugins": ["react", "jest"],
+  "plugins": ["react", "jest", "jsx-a11y"],
   "env": {
     "builtin": true,
     "es6": true,

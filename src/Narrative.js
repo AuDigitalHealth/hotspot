@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import sanitize from 'sanitize-html'
 import http from 'axios'
-import _ from 'lodash'
+import omitBy from 'lodash.omitby'
 
 import { translateHref } from './fhir/restApi.js'
 
@@ -64,7 +64,7 @@ class Narrative extends Component {
         // Filter out event-related attributes.
         '*': (tagName, attribs) => ({
           tagName,
-          attribs: _.omitBy(attribs, (_, key) => key.match(/^on.+/)),
+          attribs: omitBy(attribs, (_, key) => key.match(/^on.+/)),
         }),
         // Translate any relative hrefs within anchors.
         a: (tagName, attribs) => ({

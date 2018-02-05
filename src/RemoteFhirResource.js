@@ -84,12 +84,7 @@ class RemoteFhirResource extends Component {
     if (this.props.onError) {
       this.props.onError(error)
     } else {
-      this.setState(
-        () => ({ error, status: 'error' }),
-        () => {
-          throw error
-        },
-      )
+      this.setState(() => ({ error, status: 'error' }))
     }
   }
 

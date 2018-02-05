@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import Highlight from 'react-highlight'
+import Highlight from './vendor/highlight'
 import beautify from 'vkbeautify'
 
-import 'highlight.js/styles/docco.css'
+import './vendor/highlight/css/docco.css'
+import './css/Raw.css'
 
 // Renders the raw content of an XML or JSON FHIR resource, pretty-printed and
 // with syntax highlighting.
@@ -29,6 +30,15 @@ class Raw extends Component {
         }
       }
     }
+    this.highlightCode = this.highlightCode.bind(this)
+  }
+
+  componentDidMount() {
+    this.highlightCode()
+  }
+
+  componentDidUpdate() {
+    this.highlightCode()
   }
 
   componentWillReceiveProps(nextProps) {
@@ -56,13 +66,26 @@ class Raw extends Component {
     )
   }
 
+  highlightCode() {
+    if (this.code) {
+      Highlight.highlightBlock(this.code)
+    }
+  }
+
   render() {
     const { format } = this.props
     const { prettyContent } = this.state
 
     return (
       <div className="raw">
-        <Highlight className={format}>{prettyContent}</Highlight>
+        <pre
+          className={format}
+          ref={el => {
+            this.code = el
+          }}
+        >
+          {prettyContent}
+        </pre>
       </div>
     )
   }

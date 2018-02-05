@@ -1,6 +1,5 @@
 import React from 'react'
 import { shallow } from 'enzyme'
-import Highlight from 'react-highlight'
 
 import Raw from './Raw.js'
 
@@ -12,7 +11,7 @@ describe('Raw', () => {
       onError: jest.fn(),
     }
     const wrapper = shallow(<Raw {...props} />)
-    expect(wrapper.find(Highlight).children()).toMatchSnapshot()
+    expect(wrapper).toMatchSnapshot()
     expect(props.onError).not.toHaveBeenCalled()
   })
 

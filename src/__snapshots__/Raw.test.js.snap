@@ -1,10 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Raw should render JSON correctly 1`] = `
-"{
-  \\"cat\\": [
-    \\"dog\\",
-    \\"catdog\\"
-  ]
-}"
+<div
+  className="raw"
+>
+  <pre
+    className="json"
+  >
+    {
+      "cat": [
+        "dog",
+        "catdog"
+      ]
+    }
+  </pre>
+</div>
 `;

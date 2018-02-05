@@ -1,5 +1,5 @@
 import fs from 'fs'
-import _ from 'lodash'
+import pick from 'lodash.pick'
 
 import { extractRawJsonMetadata } from './json.js'
 
@@ -74,7 +74,7 @@ describe('extractRawJsonMetadata', () => {
       const raw = fs.readFileSync('test/' + resource[0], { encoding: 'utf-8' })
       return extractRawJsonMetadata(raw).then(metadata => {
         expect(
-          _.pick(
+          pick(
             metadata,
             'resourceType',
             'title',

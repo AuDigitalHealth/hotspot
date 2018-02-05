@@ -1,0 +1,7 @@
+*
+!docker
+!build
+build/**/*.map
+build/config.json
+build/service-worker.js
+build/asset-manifest.json
