@@ -101,6 +101,11 @@ class RemoteFhirResource extends Component {
     this.updateResource(nextProps)
   }
 
+  componentDidCatch(error) {
+    this.setState(() => ({ error }))
+    throw error
+  }
+
   render() {
     const { fhirServer, fhirVersion, narrativeStyles } = this.props
     const { resource, format, raw, status, error } = this.state
