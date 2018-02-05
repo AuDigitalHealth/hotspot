@@ -5,9 +5,10 @@
   "dependencies": {
     "axios": "^0.16.2",
     "lodash.intersection": "^4.4.0",
+    "lodash.pick": "^4.4.0",
     "prop-types": "^15.5.10",
-    "react": "^15.6.1",
-    "react-dom": "^15.6.1",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
     "react-highlight": "^0.10.0",
     "react-router-dom": "^4.1.1",
     "sanitize-html": "^1.14.1",
@@ -24,21 +25,25 @@
     "lint": "eslint --max-warnings 0 src"
   },
   "devDependencies": {
-    "enzyme": "^2.9.1",
-    "enzyme-to-json": "^1.5.1",
-    "eslint-config-standard": "^10.2.1",
-    "eslint-config-standard-react": "^5.0.0",
+    "enzyme": "^3.2.0",
+    "enzyme-adapter-react-16": "^1.1.1",
+    "enzyme-to-json": "^3.3.1",
     "eslint-plugin-jest": "^20.0.3",
     "eslint-plugin-node": "^5.1.0",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1",
     "pre-commit": "^1.2.2",
-    "react-scripts": "1.0.10",
-    "react-test-renderer": "^15.6.1",
+    "react-scripts": "^1.0.10",
+    "react-test-renderer": "^16.2.0",
     "xmldom": "^0.1.27"
   },
   "jest": {
-    "snapshotSerializers": ["enzyme-to-json/serializer"]
+    "snapshotSerializers": [
+      "enzyme-to-json/serializer"
+    ]
   },
-  "pre-commit": ["lint", "test-ci"]
+  "pre-commit": [
+    "lint",
+    "test-ci"
+  ]
 }
