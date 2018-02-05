@@ -16,12 +16,9 @@
     "ecmascript": 6,
     "jsx": true
   },
-  "extends": [
-    "eslint:recommended",
-    "plugin:react/recommended",
-    "plugin:jest/recommended"
-  ],
+  "extends": ["react-app"],
   "rules": {
-    "no-console": ["warn"]
+    "no-console": ["warn"],
+    "guard-for-in": "off"
   }
 }

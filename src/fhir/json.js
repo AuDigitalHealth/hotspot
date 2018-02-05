@@ -3,9 +3,6 @@ import pick from 'lodash.pick'
 import { OpOutcomeError } from '../errorTypes.js'
 import { oidPattern } from './common.js'
 
-export const extractRawJsonMetadata = async raw =>
-  extractJsonMetadata(JSON.parse(raw))
-
 export const extractJsonMetadata = async parsed => {
   try {
     const metadata = {}
@@ -70,6 +67,9 @@ export const extractJsonMetadata = async parsed => {
     )
   }
 }
+
+export const extractRawJsonMetadata = async raw =>
+  extractJsonMetadata(JSON.parse(raw))
 
 export const rawFromJsonResource = object => JSON.stringify(object)
 

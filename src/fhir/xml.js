@@ -1,12 +1,6 @@
 import { OpOutcomeError } from '../errorTypes.js'
 import { oidPattern } from './common.js'
 
-export const extractRawXmlMetadata = async raw => {
-  const parser = new DOMParser()
-  const doc = parser.parseFromString(raw, 'application/xml')
-  return extractXmlMetadata(doc)
-}
-
 export const extractXmlMetadata = async doc => {
   const metadata = {}
   // For the purposes of a display title, prefer title over name over resource
@@ -62,6 +56,12 @@ export const extractXmlMetadata = async doc => {
   }
 
   return metadata
+}
+
+export const extractRawXmlMetadata = async raw => {
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(raw, 'application/xml')
+  return extractXmlMetadata(doc)
 }
 
 export const rawFromXmlResource = node =>
