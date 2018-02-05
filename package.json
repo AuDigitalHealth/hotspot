@@ -17,13 +17,13 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "dockerize": "bash scripts/dockerize.sh",
-    "push-docker": "bash scripts/pushDockerImage.sh",
+    "dockerize": "bash scripts-old/dockerize.sh",
+    "push-docker": "bash scripts-old/pushDockerImage.sh",
     "test": "react-scripts test --env=jsdom --verbose",
     "test-ci": "CI=true react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "lint": "eslint --max-warnings 0 src",
-    "format-staged": "bash scripts/formatStagedFiles.sh"
+    "format-staged": "bash scripts-old/formatStagedFiles.sh"
   },
   "devDependencies": {
     "enzyme": "^3.2.0",
