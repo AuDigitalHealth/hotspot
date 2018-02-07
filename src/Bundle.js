@@ -21,6 +21,7 @@ class Bundle extends Component {
       PropTypes.instanceOf(Node), // parsed XML document fragment
     ]).isRequired,
     format: PropTypes.string.isRequired,
+    supressEntries: PropTypes.bool,
     onError: PropTypes.func,
   }
 
@@ -34,6 +35,9 @@ class Bundle extends Component {
   }
 
   extractEntries(bundle) {
+    if (this.props.supressEntries === true) {
+      return
+    }
     const extractEntriesImpl =
       bundle instanceof Node
         ? extractEntriesFromXmlBundle
@@ -58,8 +62,23 @@ class Bundle extends Component {
   }
 
   render() {
-    const { fhirServer, fhirVersion, narrativeStyles, format } = this.props
+    const {
+      fhirServer,
+      fhirVersion,
+      narrativeStyles,
+      format,
+      supressEntries,
+    } = this.props
     const { entries } = this.state
+
+    if (supressEntries) {
+      return (
+        <div className="bundle">
+          <p>Entries supressed for this Bundle.</p>
+        </div>
+      )
+    }
+
     if (!entries || (entries && entries.length === 0)) {
       return (
         <div className="bundle">

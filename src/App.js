@@ -32,10 +32,55 @@ class App extends Component {
     this.state = {}
   }
 
-  checkForFormatParam(location, render) {
-    const { config: { stripFormatParam } } = this.props
-    return stripFormatParam && containsFormatParam(location.search) ? (
-      <Redirect to={location.pathname + removeFormatParam(location.search)} />
+  processPathExceptions(location, render) {
+    const { config: { stripFormatParam, pathExceptions } } = this.props
+
+    var isRedirected = false
+    var finalLocation = {
+      pathname: location.pathname,
+      search: location.search,
+    }
+
+    if (stripFormatParam && containsFormatParam(finalLocation.search)) {
+      isRedirected = true
+      finalLocation.search = removeFormatParam(finalLocation.search)
+    }
+    if (pathExceptions) {
+      for (var i in pathExceptions) {
+        const { inPath, outSuffix, outParams } = pathExceptions[i]
+        if (
+          new RegExp(inPath.replace(/\/$/, '') + '[/]{0,1}').exec(
+            finalLocation.pathname,
+          )
+        ) {
+          if (outSuffix) {
+            isRedirected = true
+            finalLocation.pathname =
+              finalLocation.pathname.replace(/\/$/, '') +
+              '/' +
+              outSuffix.replace(/^\//, '')
+          }
+          if (outParams) {
+            for (var j in outParams) {
+              const outParam = j
+              if (
+                !new RegExp('[?$^]+' + outParam + '=[^?&]+').exec(
+                  finalLocation.search,
+                )
+              ) {
+                isRedirected = true
+                finalLocation.search += finalLocation.search === '' ? '?' : '&'
+                finalLocation.search +=
+                  outParam + '=' + outParams[outParam].toString()
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return isRedirected ? (
+      <Redirect to={finalLocation.pathname + finalLocation.search} />
     ) : (
       render
     )
@@ -77,7 +122,7 @@ class App extends Component {
               <Route
                 path="/:path"
                 render={({ location }) =>
-                  this.checkForFormatParam(
+                  this.processPathExceptions(
                     location,
                     <RemoteFhirResource
                       path={location.pathname}

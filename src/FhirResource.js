@@ -47,6 +47,8 @@ class FhirResource extends Component {
     noTabSelectedAtLoad: false,
   }
 
+  contentMap = {}
+
   constructor(props) {
     super(props)
     this.handleError = this.handleError.bind(this)
@@ -268,89 +270,95 @@ class FhirResource extends Component {
   }
 
   renderTabContent() {
-    const {
-      fhirServer,
-      fhirVersion,
-      narrativeStyles,
-      resource,
-      format,
-    } = this.props
-    const { narrative, activeTab, expansion, bundle } = this.state
-    // If the resource is provided raw, use that as our raw value. Otherwise,
-    // use the raw prop. If there is no raw prop, generate a raw value by
-    // serializing the object.
-    const raw =
-      typeof resource === 'string'
-        ? resource
-        : this.props.raw
-          ? this.props.raw
-          : resource instanceof Node
-            ? rawFromXmlResource(resource)
-            : rawFromJsonResource(resource)
-    return (
-      <div className="tab-content-wrapper">
-        {narrative ? (
-          <section
-            className={
-              activeTab === 'narrative'
-                ? 'tab-content'
-                : 'tab-content tab-content-hidden'
-            }
-          >
-            <Narrative
-              content={narrative}
-              stylesPath={narrativeStyles}
-              fhirServer={fhirServer}
-              onError={this.handleError}
-            />
-          </section>
-        ) : null}
-        {expansion ? (
-          <section
-            className={
-              activeTab === 'expansion'
-                ? 'tab-content'
-                : 'tab-content tab-content-hidden'
-            }
-          >
-            <ValueSetExpansion
-              expansion={expansion}
-              onError={this.handleError}
-            />
-          </section>
-        ) : null}
-        {bundle ? (
-          <section
-            className={
-              activeTab === 'bundle'
-                ? 'tab-content'
-                : 'tab-content tab-content-hidden'
-            }
-          >
-            <Bundle
-              fhirServer={fhirServer}
-              fhirVersion={fhirVersion}
-              narrativeStyles={narrativeStyles}
-              bundle={bundle}
-              format={format}
-              raw={raw}
-              onError={this.handleError}
-            />
-          </section>
-        ) : null}
-        {raw ? (
-          <section
-            className={
-              activeTab === 'raw'
-                ? 'tab-content'
-                : 'tab-content tab-content-hidden'
-            }
-          >
-            <Raw content={raw} format={format} onError={this.handleError} />
-          </section>
-        ) : null}
-      </div>
-    )
+    if (this.contentMap[JSON.stringify(this.state)] == null) {
+      const {
+        fhirServer,
+        fhirVersion,
+        narrativeStyles,
+        resource,
+        format,
+      } = this.props
+      const { narrative, activeTab, expansion, bundle } = this.state
+      // If the resource is provided raw, use that as our raw value. Otherwise,
+      // use the raw prop. If there is no raw prop, generate a raw value by
+      // serializing the object.
+      const raw =
+        typeof resource === 'string'
+          ? resource
+          : this.props.raw
+            ? this.props.raw
+            : resource instanceof Node
+              ? rawFromXmlResource(resource)
+              : rawFromJsonResource(resource)
+      this.contentMap[JSON.stringify(this.state)] = (
+        <div className="tab-content-wrapper">
+          {narrative ? (
+            <section
+              className={
+                activeTab === 'narrative'
+                  ? 'tab-content'
+                  : 'tab-content tab-content-hidden'
+              }
+            >
+              <Narrative
+                content={narrative}
+                stylesPath={narrativeStyles}
+                fhirServer={fhirServer}
+                onError={this.handleError}
+              />
+            </section>
+          ) : null}
+          {expansion ? (
+            <section
+              className={
+                activeTab === 'expansion'
+                  ? 'tab-content'
+                  : 'tab-content tab-content-hidden'
+              }
+            >
+              <ValueSetExpansion
+                expansion={expansion}
+                onError={this.handleError}
+              />
+            </section>
+          ) : null}
+          {bundle ? (
+            <section
+              className={
+                activeTab === 'bundle'
+                  ? 'tab-content'
+                  : 'tab-content tab-content-hidden'
+              }
+            >
+              <Bundle
+                fhirServer={fhirServer}
+                fhirVersion={fhirVersion}
+                narrativeStyles={narrativeStyles}
+                bundle={bundle}
+                format={format}
+                raw={raw}
+                supressEntries={
+                  activeTab === 'raw' && resource.resourceType === 'Bundle'
+                }
+                onError={this.handleError}
+              />
+            </section>
+          ) : null}
+          {raw ? (
+            <section
+              className={
+                activeTab === 'raw'
+                  ? 'tab-content'
+                  : 'tab-content tab-content-hidden'
+              }
+            >
+              <Raw content={raw} format={format} onError={this.handleError} />
+            </section>
+          ) : null}
+        </div>
+      )
+    }
+    return this.contentMap[JSON.stringify(this.state)]
   }
 }
 
