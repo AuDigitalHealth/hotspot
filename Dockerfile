@@ -11,6 +11,6 @@ COPY docker/config-ssi.json /usr/share/nginx/html/config.json
 ENV HOTSPOT_FHIR_SERVER=https://ontoserver.csiro.au/stu3-latest
 ENV HOTSPOT_FHIR_VERSION=3.0.1
 ENV HOTSPOT_NARRATIVE_STYLES=/agency-narrative.css
-ENV HOTSPOT_STRIP_FORMAT_PARAM=false
+ENV HOTSPOT_PATH_ROUTES=[]
 
 CMD ["/usr/local/bin/start.sh"]
