@@ -1,5 +1,45 @@
 {
   "fhirServer": "http://ontoserver.csiro.au/stu3-latest",
   "fhirVersion": "3.0.1",
-  "narrativeStyles": "/agency-narrative.css"
+  "narrativeStyles": "/agency-narrative.css",
+  "pathRoutes": [
+    {
+      "matchPattern": ".*",
+      "removeParams": ["_format"]
+    },
+    {
+      "matchPattern": "^[/]*$",
+      "addSuffix": "metadata"
+    },
+    {
+      "matchPattern": "/CodeSystem[/]*$",
+      "addParams": {
+        "_elements": [
+          "resourceType",
+          "id",
+          "meta",
+          "url",
+          "identifier",
+          "version",
+          "name",
+          "status",
+          "experimental",
+          "date",
+          "publisher",
+          "description",
+          "author",
+          "copyright",
+          "text",
+          "caseSensitive",
+          "valueSet",
+          "hierarchyMeaning",
+          "compositional",
+          "versionNeeded",
+          "content",
+          "filter",
+          "property"
+        ]
+      }
+    }
+  ]
 }

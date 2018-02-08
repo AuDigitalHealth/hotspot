@@ -8,7 +8,7 @@ import {
 } from 'react-router-dom'
 
 import RemoteFhirResource from './RemoteFhirResource.js'
-import { containsFormatParam, removeFormatParam } from './fhir/common.js'
+import { processPathRoutes } from './pathRoutes.js'
 
 import agencyLogo from './img/agency.svg'
 import csiroLogo from './img/csiro.svg'
@@ -23,7 +23,6 @@ class App extends Component {
     config: {
       fhirServer: 'https://ontoserver.csiro.au/stu3-latest',
       fhirVersion: '3.0.1',
-      stripFormatParam: false,
     },
   }
 
@@ -32,54 +31,14 @@ class App extends Component {
     this.state = {}
   }
 
-  processPathExceptions(location, render) {
-    const { config: { stripFormatParam, pathExceptions } } = this.props
-
-    var isRedirected = false
-    var finalLocation = {
-      pathname: location.pathname,
-      search: location.search,
+  processPathRoutes(location, render) {
+    if (!location.pathname) {
+      return
     }
-
-    if (stripFormatParam && containsFormatParam(finalLocation.search)) {
-      isRedirected = true
-      finalLocation.search = removeFormatParam(finalLocation.search)
-    }
-    if (pathExceptions) {
-      for (var i in pathExceptions) {
-        const { inPath, outSuffix, outParams } = pathExceptions[i]
-        if (
-          new RegExp(inPath.replace(/\/$/, '') + '[/]{0,1}').exec(
-            finalLocation.pathname,
-          )
-        ) {
-          if (outSuffix) {
-            isRedirected = true
-            finalLocation.pathname =
-              finalLocation.pathname.replace(/\/$/, '') +
-              '/' +
-              outSuffix.replace(/^\//, '')
-          }
-          if (outParams) {
-            for (var j in outParams) {
-              const outParam = j
-              if (
-                !new RegExp('[?$^]+' + outParam + '=[^?&]+').exec(
-                  finalLocation.search,
-                )
-              ) {
-                isRedirected = true
-                finalLocation.search += finalLocation.search === '' ? '?' : '&'
-                finalLocation.search +=
-                  outParam + '=' + outParams[outParam].toString()
-              }
-            }
-          }
-        }
-      }
-    }
-
-    return isRedirected ? (
+    const { config: { pathRoutes } } = this.props
+    const finalLocation = processPathRoutes(location, pathRoutes)
+    return location.pathname !== finalLocation.pathname ||
+      location.search !== finalLocation.search ? (
       <Redirect to={finalLocation.pathname + finalLocation.search} />
     ) : (
       render
@@ -122,7 +81,7 @@ class App extends Component {
               <Route
                 path="/:path"
                 render={({ location }) =>
-                  this.processPathExceptions(
+                  this.processPathRoutes(
                     location,
                     <RemoteFhirResource
                       path={location.pathname}
@@ -134,14 +93,17 @@ class App extends Component {
                 }
               />
               <Route
-                render={() => (
-                  <div className="fhir-resource">
-                    <p>
-                      Please provide a path to a valid FHIR resource within the
-                      URL.
-                    </p>
-                  </div>
-                )}
+                render={({ location }) =>
+                  this.processPathRoutes(
+                    location,
+                    <div className="fhir-resource">
+                      <p>
+                        Please provide a path to a valid FHIR resource within
+                        the URL.
+                      </p>
+                    </div>,
+                  )
+                }
               />
             </Switch>
           </Router>

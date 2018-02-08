@@ -1,6 +1,95 @@
-import { containsFormatParam, removeFormatParam } from './common.js'
+import {
+  matchesPath,
+  addPathSuffix,
+  containsParam,
+  removeParam,
+  addParam,
+} from './common.js'
 
-describe('containsFormatParam', () => {
+describe('matchesPath', () => {
+  const positives = [
+    { path: 'http://xyz.123.ab/fred', pattern: '.*' },
+    {
+      path: 'http://ontoserver.csiro.au/stu3-latest/CodeSystem',
+      pattern: '/CodeSystem[/]{0,1}$',
+    },
+    {
+      path: 'http://ontoserver.csiro.au/stu3-latest/CodeSystem/',
+      pattern: '/CodeSystem[/]{0,1}$',
+    },
+    { path: '/CodeSystem', pattern: '/CodeSystem[/]{0,1}$' },
+    { path: '/CodeSystem/', pattern: '/CodeSystem[/]{0,1}$' },
+    { path: '/SomeCodeSystem/$expand', pattern: 'CodeSystem/\\$expand$' },
+  ]
+  for (const positive of positives) {
+    it(`should return truthy for "${JSON.stringify(positive)}"`, () => {
+      expect(matchesPath(positive.path, positive.pattern)).toBeTruthy()
+    })
+  }
+  const negatives = [
+    { path: '', pattern: '/CodeSystem/$' },
+    {
+      path: 'http://ontoserver.csiro.au/stu3-latest/CodeSystem',
+      pattern: '/CodeSystem/$',
+    },
+    {
+      path: 'http://ontoserver.csiro.au/stu3-latest/CodeSystem/',
+      pattern: '/CodeSystem$',
+    },
+    { path: '/ValueSet', pattern: '/CodeSystem[/]{0,1}$' },
+    { path: '/ConceptMap/', pattern: '/CodeSystem[/]{0,1}$' },
+    { path: '/SomeCodeSystem/$expand', pattern: '/CodeSystem/\\$expand$' },
+  ]
+  for (const negative of negatives) {
+    it(`should return falsy for "${JSON.stringify(negative)}"`, () => {
+      expect(matchesPath(negative.path, negative.pattern)).toBeFalsy()
+    })
+  }
+})
+
+describe('addPathSuffix', () => {
+  const expectations = [
+    {
+      path: 'http://xyz.123.ab/fred',
+      suffix: 'barney',
+      expectation: 'http://xyz.123.ab/fred/barney',
+    },
+    {
+      path: 'http://ontoserver.csiro.au/stu3-latest/CodeSystem',
+      suffix: '/$expand',
+      expectation: 'http://ontoserver.csiro.au/stu3-latest/CodeSystem/$expand',
+    },
+    {
+      path: 'http://ontoserver.csiro.au/stu3-latest/CodeSystem/',
+      suffix: '/$expand',
+      expectation: 'http://ontoserver.csiro.au/stu3-latest/CodeSystem/$expand',
+    },
+    {
+      path: 'http://ontoserver.csiro.au/stu3-latest/CodeSystem/',
+      suffix: '//$expand',
+      expectation: 'http://ontoserver.csiro.au/stu3-latest/CodeSystem/$expand',
+    },
+    {
+      path: 'http://ontoserver.csiro.au/stu3-latest/CodeSystem',
+      suffix: '',
+      expectation: 'http://ontoserver.csiro.au/stu3-latest/CodeSystem',
+    },
+  ]
+  for (const expection in expectations) {
+    it(`should return "${expectations[expection].expectation}" for "${
+      expectations[expection].path
+    }" + "${expectations[expection].suffix}"`, () => {
+      expect(
+        addPathSuffix(
+          expectations[expection].path,
+          expectations[expection].suffix,
+        ),
+      ).toEqual(expectations[expection].expectation)
+    })
+  }
+})
+
+describe('containsParam', () => {
   const positives = [
     '?_format=html',
     '?url:below=http://snomed.info&_format=html',
@@ -9,7 +98,7 @@ describe('containsFormatParam', () => {
   ]
   for (const positive of positives) {
     it(`should return truthy for "${positive}"`, () => {
-      expect(containsFormatParam(positive)).toBeTruthy()
+      expect(containsParam(positive, '_format')).toBeTruthy()
     })
   }
   const negatives = [
@@ -21,12 +110,12 @@ describe('containsFormatParam', () => {
   ]
   for (const negative of negatives) {
     it(`should return falsy for "${negative}"`, () => {
-      expect(containsFormatParam(negative)).toBeFalsy()
+      expect(containsParam(negative, '_format')).toBeFalsy()
     })
   }
 })
 
-describe('removeFormatParam', () => {
+describe('removeParam', () => {
   const expectations = {
     '?_format=html': '',
     '?_format=html&': '',
@@ -45,7 +134,59 @@ describe('removeFormatParam', () => {
     it(`should return "${
       expectations[expectation]
     }" for "${expectation}"`, () => {
-      expect(removeFormatParam(expectation)).toEqual(expectations[expectation])
+      expect(removeParam(expectation, '_format')).toEqual(
+        expectations[expectation],
+      )
+    })
+  }
+})
+
+describe('addParam', () => {
+  const expectations = [
+    {
+      query: '?123=xyz',
+      paramName: 'barney',
+      paramValue: 'legend',
+      expectation: '?123=xyz&barney=legend',
+    },
+    {
+      query: '?123=xyz',
+      paramName: 'barney',
+      paramValue: ['legend', 'champion'],
+      expectation: '?123=xyz&barney=legend,champion',
+    },
+    {
+      query: '?123=xyz',
+      paramName: 'barney',
+      paramValue: null,
+      expectation: '?123=xyz',
+    },
+    {
+      query: '?123=xyz',
+      paramName: 'barney',
+      paramValue: '',
+      expectation: '?123=xyz&barney=',
+    },
+    {
+      query: '',
+      paramName: 'barney',
+      paramValue: 'legend',
+      expectation: '?barney=legend',
+    },
+  ]
+  for (const expection in expectations) {
+    it(`should return "${expectations[expection].expectation}" for "${
+      expectations[expection].query
+    }" + "${expectations[expection].paramName}" = "${
+      expectations[expection].paramValue
+    }"`, () => {
+      expect(
+        addParam(
+          expectations[expection].query,
+          expectations[expection].paramName,
+          expectations[expection].paramValue,
+        ),
+      ).toEqual(expectations[expection].expectation)
     })
   }
 })
