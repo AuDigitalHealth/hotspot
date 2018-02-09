@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import InfoMessage from './InfoMessage.js'
 import {
   BrowserRouter as Router,
   Route,
@@ -8,7 +9,11 @@ import {
 } from 'react-router-dom'
 
 import RemoteFhirResource from './RemoteFhirResource.js'
-import { processPathRoutes } from './pathRoutes.js'
+import {
+  processPathRoutes,
+  getRouteMessages,
+  resetRouteMessages,
+} from './pathRoutes.js'
 
 import agencyLogo from './img/agency.svg'
 import csiroLogo from './img/csiro.svg'
@@ -45,6 +50,20 @@ class App extends Component {
     )
   }
 
+  showRouteMessage(location) {
+    const { config: { pathRoutes } } = this.props
+    const messages = getRouteMessages(location, pathRoutes)
+    resetRouteMessages(location)
+    if (messages && messages.length > 0) {
+      if (messages.length === 1) {
+        return <InfoMessage message={messages[0]} />
+      } else {
+        return <InfoMessage messages={messages} />
+      }
+    }
+    return null
+  }
+
   handleLoad(metadata) {
     // Update the document title with the title and version of the loaded FHIR
     // resource.
@@ -76,6 +95,7 @@ class App extends Component {
           </h1>
         </header>
         <main>
+          {this.showRouteMessage(location)}
           <Router>
             <Switch>
               <Route

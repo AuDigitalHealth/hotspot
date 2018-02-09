@@ -44,3 +44,13 @@ export const addParam = (query, param, value) => {
   }
   return output
 }
+
+// Returns the value of the provided param name from the supplied query component of a URL
+export const getParam = (query, param) => {
+  if (containsParam(query, param)) {
+    return query
+      .match(new RegExp(paramPattern.replace('@@param_name@@', param)))[0]
+      .replace(/^.*[&?]*[^=]+=([^?&]+)[&?]{0,1}.*/, '$1')
+  }
+  return null
+}

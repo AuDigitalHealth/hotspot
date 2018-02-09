@@ -4,6 +4,7 @@ import {
   containsParam,
   addParam,
   removeParam,
+  getParam,
 } from './fhir/common.js'
 
 // When provided with a location, with a pathname that matches a rule in the pathRoute config, the
@@ -19,40 +20,95 @@ export const processPathRoutes = (location, routeConfig) => {
       pathname: location.pathname,
       search: location.search,
     }
+    let routeIds = []
     for (var i in routeConfig) {
-      const { matchPattern, addSuffix, addParams, removeParams } = routeConfig[
-        i
-      ]
+      const {
+        id,
+        message,
+        matchPattern,
+        addSuffix,
+        addParams,
+        removeParams,
+      } = routeConfig[i]
       if (matchesPath(finalLocation.pathname, matchPattern)) {
         if (addSuffix) {
           finalLocation.pathname = addPathSuffix(
             finalLocation.pathname,
             addSuffix,
           )
+          if (id && message && routeIds.indexOf(id) < 0) {
+            routeIds.push(id)
+          }
         }
         if (removeParams) {
+          let removed = false
           for (var k in removeParams) {
             const remParam = removeParams[k]
             if (containsParam(finalLocation.search, remParam)) {
               finalLocation.search = removeParam(finalLocation.search, remParam)
+              removed = true
             }
+          }
+          if (removed && id && message && routeIds.indexOf(id) < 0) {
+            routeIds.push(id)
           }
         }
         if (addParams) {
+          let added = false
           for (var j in addParams) {
             const param = j
-            if (!containsParam(finalLocation.search, param, addParams[param])) {
+            if (!containsParam(finalLocation.search, param)) {
               finalLocation.search = addParam(
                 finalLocation.search,
                 param,
                 addParams[param],
               )
+              added = true
             }
+          }
+          if (added && id && message && routeIds.indexOf(id) < 0) {
+            routeIds.push(id)
           }
         }
       }
     }
+    if (routeIds.length > 0) {
+      finalLocation.search = addParam(finalLocation.search, '_rIds', routeIds)
+    }
     return finalLocation
   }
   return location
+}
+
+export const getMessageById = (routeConfig, routeId) => {
+  for (var i in routeConfig) {
+    if (routeConfig[i].id && routeConfig[i].id === routeId) {
+      return routeConfig[i].message
+    }
+  }
+  return null
+}
+
+export const getRouteMessages = (location, routeConfig) => {
+  if (containsParam(location.search, '_rIds')) {
+    const msgIds = getParam(location.search, '_rIds').split(',')
+    let messages = []
+    if (msgIds) {
+      for (var j in msgIds) {
+        const msg = getMessageById(routeConfig, msgIds[j])
+        if (msg) {
+          messages.push(msg)
+        }
+      }
+    }
+    return messages
+  }
+  return null
+}
+
+export const resetRouteMessages = location => {
+  if (containsParam(location.search, '_rIds')) {
+    const updatedSearch = removeParam(location.search, '_rIds')
+    window.history.replaceState({}, null, location.pathname + updatedSearch)
+  }
 }

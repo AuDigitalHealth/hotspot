@@ -1,0 +1,28 @@
+.info-box {
+  margin-bottom: 10px;
+}
+
+.info {
+  position: relative;
+  background-color: #ddeeff;
+  border: 1px solid #99aaff;
+  border-radius: 6px;
+  padding: 0 18px 0 80px;
+  font-size: 14px;
+  max-width: 900px;
+  clear: left;
+}
+
+.info > strong {
+  position: absolute;
+  top: 10px;
+  left: 18px;
+}
+
+.info p {
+  margin: 0.8em 0;
+}
+
+.info p strong {
+  font-weight: normal;
+}
