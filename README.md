@@ -59,20 +59,30 @@ The Docker image can be configured using the following environment variables:
 * `HOTSPOT_FHIR_VERSION`: The version of FHIR (x.y.z) assumed to be in use by the FHIR server. Defaults to `3.0.1`.
 * `HOTSPOT_NARRATIVE_STYLES`: A URL to a custom stylesheet to override styles within
   narrative content.
-* `HOTSPOT_PATH_ROUTES`: Provides a means of specifying custom path routing rules. 
-  These can be used to disallow requests that would otherwise render hotspot to be 
-  non-performant. For example, when receiving a request at `<FHIR_ENDPOINT>/CodeSystem` 
-  you may want to redirect the client to a URL that limits the amount of data that 
-  would otherwise be returned (--> `<FHIR_ENDPOINT>/CodeSystem?_elements=id,name,status`).
-  Another common example would be to strip the `_format` parameter 
-  (eg. `<FHIR_ENDPOINT>/metadata?_format=xml` --> `<FHIR_ENDPOINT>/metadata`).
-  When provided with a location, with a pathname that matches a rule in the pathRoute 
-  config, the corresponding rule is applied to the redirect URL.
-  _**NOTE:** 'matchPattern' supports regex_  
-  **Actions that can be applied to a match include:**
-    * **addSuffix**: Append a suffix to the provided pathname (NOTE: it will add a slash between the existing path and suffix)
-    * **removeParams**: If the provided query string contains a parameter listed in 'removeParams', it will be removed from the redirect query string
-    * **addParams**: If the provided query string does not contain the params defined in "addParams", they will be added to the redirect query string
+* `HOTSPOT_PATH_ROUTES`: Provides a means of specifying custom path routing rules (see below).
+ 
+##### Path Routing
+ 
+Path routing rules can be used to disallow requests that would otherwise render hotspot to be 
+non-performant. For example, when receiving a request at `<FHIR_ENDPOINT>/CodeSystem` 
+you may want to redirect the client to a URL that limits the amount of data that 
+would otherwise be returned (--> `<FHIR_ENDPOINT>/CodeSystem?_elements=id,name,status`).
+Another common example would be to strip the `_format` parameter 
+(eg. `<FHIR_ENDPOINT>/metadata?_format=xml` --> `<FHIR_ENDPOINT>/metadata`).
+When provided with a location, with a pathname that matches a rule in the pathRoute 
+config, the corresponding rule is applied to the redirect URL.
+_**NOTE:** 'matchPattern' supports regex_  
+  
+**Actions that can be applied to a match include:**
+
+  * **addSuffix**: Append a suffix to the provided pathname (NOTE: it will add a slash between the existing path and suffix)
+  * **removeParams**: If the provided query string contains a parameter listed in 'removeParams', it will be removed from the redirect query string
+  * **addParams**: If the provided query string does not contain the params defined in "addParams", they will be added to the redirect query string    
+
+**To log re-route message:**
+
+  * **id**: An key to uniquely identify each routing rule
+  * **message**: An informational message to be reported, after the client is re-routed
 
 ##### Example Docker Compose file
 
@@ -95,16 +105,21 @@ services:
 ```
 [
     {
+      "id": "00",
+      "message": "The '_format' parameter has been removed from the provided URL. It is not supported via the browser representation of this terminology server.",
       "matchPattern": ".*",
       "removeParams": [
         "_format"
       ]
     },
     {
+      "id": "01",
       "matchPattern": "^[/]*$",
       "addSuffix": "metadata"
     },
     {
+      "id": "02",
+      "message": "Please be aware that you are viewing a subset of this bundle. The 'concept' attribute has been deliberately excluded from this view. The full content of each resource can be viewed, via the 'Full Resource' button.",
       "matchPattern": "/CodeSystem[/]*$",
       "addParams": {
         "_elements": [
