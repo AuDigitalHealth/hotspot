@@ -109,6 +109,9 @@ export const getRouteMessages = (location, routeConfig) => {
 export const resetRouteMessages = location => {
   if (containsParam(location.search, '_rIds')) {
     const updatedSearch = removeParam(location.search, '_rIds')
-    window.history.replaceState({}, null, location.pathname + updatedSearch)
+    const title = document.getElementsByTagName('title')
+      ? document.getElementsByTagName('title')[0].innerHTML
+      : 'FHIR Resource'
+    window.history.replaceState({}, title, location.pathname + updatedSearch)
   }
 }

@@ -15,6 +15,8 @@ import {
   resetRouteMessages,
 } from './pathRoutes.js'
 
+import { removeParam } from './fhir/common.js'
+
 import agencyLogo from './img/agency.svg'
 import csiroLogo from './img/csiro.svg'
 import './css/App.css'
@@ -95,37 +97,42 @@ class App extends Component {
           </h1>
         </header>
         <main>
-          {this.showRouteMessage(location)}
           <Router>
-            <Switch>
+            <div>
               <Route
-                path="/:path"
-                render={({ location }) =>
-                  this.processPathRoutes(
-                    location,
-                    <RemoteFhirResource
-                      path={location.pathname}
-                      query={location.search}
-                      onLoad={this.handleLoad}
-                      {...config}
-                    />,
-                  )
-                }
+                path="/"
+                render={({ location }) => this.showRouteMessage(location)}
               />
-              <Route
-                render={({ location }) =>
-                  this.processPathRoutes(
-                    location,
-                    <div className="fhir-resource">
-                      <p>
-                        Please provide a path to a valid FHIR resource within
-                        the URL.
-                      </p>
-                    </div>,
-                  )
-                }
-              />
-            </Switch>
+              <Switch>
+                <Route
+                  path="/:path"
+                  render={({ location }) =>
+                    this.processPathRoutes(
+                      location,
+                      <RemoteFhirResource
+                        path={location.pathname}
+                        query={removeParam(location.search, '_rIds')}
+                        onLoad={this.handleLoad}
+                        {...config}
+                      />,
+                    )
+                  }
+                />
+                <Route
+                  render={({ location }) =>
+                    this.processPathRoutes(
+                      location,
+                      <div className="fhir-resource">
+                        <p>
+                          Please provide a path to a valid FHIR resource within
+                          the URL.
+                        </p>
+                      </div>,
+                    )
+                  }
+                />
+              </Switch>
+            </div>
           </Router>
         </main>
       </div>
