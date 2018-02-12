@@ -19,7 +19,6 @@ class ValueSetExpansion extends Component {
       PropTypes.instanceOf(Node), // parsed XML document fragment
     ]).isRequired,
     onError: PropTypes.func,
-    fhirServer: PropTypes.string,
   }
 
   constructor(props) {
@@ -84,14 +83,11 @@ class ValueSetExpansion extends Component {
   }
 
   renderCodeRows(codes, columns) {
-    const fhirServer = this.props.fhirServer
     return codes.map((code, i) => (
       <tr key={i}>
         {code.system ? (
           <td>
-            <Link to={codeSystemSearchPath(code.system, fhirServer)}>
-              {code.system}
-            </Link>
+            <Link to={codeSystemSearchPath(code.system)}>{code.system}</Link>
           </td>
         ) : (
           this.renderEmptyCellOrNull(columns, 'system')
@@ -99,20 +95,11 @@ class ValueSetExpansion extends Component {
         {code.code ? (
           <td>
             {code.code && code.system && code.version ? (
-              <Link
-                to={lookupPath(
-                  code.system,
-                  code.code,
-                  code.version,
-                  fhirServer,
-                )}
-              >
+              <Link to={lookupPath(code.system, code.code, code.version)}>
                 {code.code}
               </Link>
             ) : code.code && code.system ? (
-              <Link to={lookupPath(code.system, code.code, fhirServer)}>
-                {code.code}
-              </Link>
+              <Link to={lookupPath(code.system, code.code)}>{code.code}</Link>
             ) : (
               code.code
             )}

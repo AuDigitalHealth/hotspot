@@ -220,11 +220,7 @@ class FhirResource extends Component {
   renderTabs() {
     const { fhirServer, fhirVersion, format, fullUrl } = this.props
     const { narrative, expansion, bundle, valueSetUri, activeTab } = this.state
-    const valueSetPath = valueSetExpansionPath(
-      valueSetUri,
-      fhirVersion,
-      fhirServer,
-    )
+    const valueSetPath = valueSetExpansionPath(valueSetUri, fhirVersion)
     return (
       <nav>
         <ol>
@@ -323,7 +319,6 @@ class FhirResource extends Component {
               <ValueSetExpansion
                 expansion={expansion}
                 onError={this.handleError}
-                fhirServer={fhirServer}
               />
             </section>
           ) : null}
