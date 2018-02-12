@@ -1,21 +1,32 @@
-export const valueSetExpansionPath = (valueSetUri, fhirVersion) => {
+export const valueSetExpansionPath = (
+  valueSetUri,
+  fhirVersion,
+  { pathPrefix = '' } = {},
+) => {
   if (!valueSetUri) {
     return null
   }
   const fhirMajorVersion = parseInt(fhirVersion.split('.')[0], 10)
   const uriParam = fhirMajorVersion >= 3 ? 'url' : 'identifier'
   const escapedUri = encodeURIComponent(valueSetUri)
-  return `/ValueSet/$expand?${uriParam}=${escapedUri}&count=100`
+  return `${pathPrefix}/ValueSet/$expand?${uriParam}=${escapedUri}&count=100`
 }
 
-export const codeSystemSearchPath = codeSystemUri => {
-  return `/CodeSystem?url=${codeSystemUri}`
+export const codeSystemSearchPath = (
+  codeSystemUri,
+  { pathPrefix = '' } = {},
+) => {
+  return `${pathPrefix}/CodeSystem?url=${codeSystemUri}`
 }
 
-export const lookupPath = (system, code, version) =>
+export const lookupPath = (
+  system,
+  code,
+  { version = null, pathPrefix = '' } = {},
+) =>
   version
-    ? `/CodeSystem/$lookup?system=${system}&version=${version}&code=${code}`
-    : `/CodeSystem/$lookup?system=${system}&code=${code}`
+    ? `${pathPrefix}/CodeSystem/$lookup?system=${system}&version=${version}&code=${code}`
+    : `${pathPrefix}/CodeSystem/$lookup?system=${system}&code=${code}`
 
 export const sniffFormat = contentType => {
   // Sniff JSON if the Content-Type header matches:

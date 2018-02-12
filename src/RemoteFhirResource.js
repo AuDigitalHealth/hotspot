@@ -18,6 +18,7 @@ class RemoteFhirResource extends Component {
     narrativeStyles: PropTypes.string,
     onLoad: PropTypes.func,
     onError: PropTypes.func,
+    pathPrefix: PropTypes.string,
   }
 
   constructor(props) {
@@ -102,7 +103,7 @@ class RemoteFhirResource extends Component {
   }
 
   render() {
-    const { fhirServer, fhirVersion, narrativeStyles } = this.props
+    const { fhirServer, fhirVersion, narrativeStyles, pathPrefix } = this.props
     const { resource, format, raw, status, error } = this.state
 
     switch (status) {
@@ -124,6 +125,7 @@ class RemoteFhirResource extends Component {
               raw={raw}
               onLoad={this.handleLoad}
               onError={this.handleError}
+              pathPrefix={pathPrefix}
             />
           </div>
         )

@@ -40,6 +40,7 @@ class FhirResource extends Component {
     noTabSelectedAtLoad: PropTypes.bool,
     onLoad: PropTypes.func,
     onError: PropTypes.func,
+    pathPrefix: PropTypes.string,
   }
 
   static defaultProps = {
@@ -47,7 +48,7 @@ class FhirResource extends Component {
     noTabSelectedAtLoad: false,
   }
 
-  contentMap = {}
+  renderedRaw = {}
 
   constructor(props) {
     super(props)
@@ -162,6 +163,20 @@ class FhirResource extends Component {
     return fullUrl
   }
 
+  setResourceRendered(resource) {
+    this.renderedRaw[
+      resource.id + ':' + (resource.version ? resource.version : '')
+    ] = true
+  }
+
+  isResourceRendered(resource) {
+    return (
+      this.renderedRaw[
+        resource.id + ':' + (resource.version ? resource.version : '')
+      ] === true
+    )
+  }
+
   render() {
     const { className } = this.props
     const { status } = this.state
@@ -218,9 +233,11 @@ class FhirResource extends Component {
   }
 
   renderTabs() {
-    const { fhirServer, fhirVersion, format, fullUrl } = this.props
+    const { fhirServer, fhirVersion, format, fullUrl, pathPrefix } = this.props
     const { narrative, expansion, bundle, valueSetUri, activeTab } = this.state
-    const valueSetPath = valueSetExpansionPath(valueSetUri, fhirVersion)
+    const valueSetPath = valueSetExpansionPath(valueSetUri, fhirVersion, {
+      pathPrefix,
+    })
     return (
       <nav>
         <ol>
@@ -255,7 +272,12 @@ class FhirResource extends Component {
             {format ? format.toUpperCase() : undefined}
           </li>
           {fullUrl && this.isCorrectFhirServer(fullUrl) ? (
-            <Link to={this.toCorrectProtocol(fullUrl).replace(fhirServer, '')}>
+            <Link
+              to={this.toCorrectProtocol(fullUrl).replace(
+                fhirServer,
+                pathPrefix,
+              )}
+            >
               Full Resource
             </Link>
           ) : null}
@@ -270,95 +292,96 @@ class FhirResource extends Component {
   }
 
   renderTabContent() {
-    if (this.contentMap[JSON.stringify(this.state)] == null) {
-      const {
-        fhirServer,
-        fhirVersion,
-        narrativeStyles,
-        resource,
-        format,
-      } = this.props
-      const { narrative, activeTab, expansion, bundle } = this.state
-      // If the resource is provided raw, use that as our raw value. Otherwise,
-      // use the raw prop. If there is no raw prop, generate a raw value by
-      // serializing the object.
-      const raw =
-        typeof resource === 'string'
-          ? resource
-          : this.props.raw
-            ? this.props.raw
-            : resource instanceof Node
-              ? rawFromXmlResource(resource)
-              : rawFromJsonResource(resource)
-      this.contentMap[JSON.stringify(this.state)] = (
-        <div className="tab-content-wrapper">
-          {narrative ? (
-            <section
-              className={
-                activeTab === 'narrative'
-                  ? 'tab-content'
-                  : 'tab-content tab-content-hidden'
+    const {
+      fhirServer,
+      fhirVersion,
+      narrativeStyles,
+      resource,
+      format,
+      pathPrefix,
+    } = this.props
+    const { narrative, activeTab, expansion, bundle } = this.state
+    // If the resource is provided raw, use that as our raw value. Otherwise,
+    // use the raw prop. If there is no raw prop, generate a raw value by
+    // serializing the object.
+    const raw =
+      typeof resource === 'string'
+        ? resource
+        : this.props.raw
+          ? this.props.raw
+          : resource instanceof Node
+            ? rawFromXmlResource(resource)
+            : rawFromJsonResource(resource)
+    return (
+      <div className="tab-content-wrapper">
+        {narrative ? (
+          <section
+            className={
+              activeTab === 'narrative'
+                ? 'tab-content'
+                : 'tab-content tab-content-hidden'
+            }
+          >
+            <Narrative
+              content={narrative}
+              stylesPath={narrativeStyles}
+              fhirServer={fhirServer}
+              onError={this.handleError}
+            />
+          </section>
+        ) : null}
+        {expansion ? (
+          <section
+            className={
+              activeTab === 'expansion'
+                ? 'tab-content'
+                : 'tab-content tab-content-hidden'
+            }
+          >
+            <ValueSetExpansion
+              expansion={expansion}
+              onError={this.handleError}
+              pathPrefix={pathPrefix}
+            />
+          </section>
+        ) : null}
+        {bundle ? (
+          <section
+            className={
+              activeTab === 'bundle'
+                ? 'tab-content'
+                : 'tab-content tab-content-hidden'
+            }
+          >
+            <Bundle
+              fhirServer={fhirServer}
+              fhirVersion={fhirVersion}
+              narrativeStyles={narrativeStyles}
+              bundle={bundle}
+              format={format}
+              raw={raw}
+              supressEntries={
+                activeTab === 'raw' && resource.resourceType === 'Bundle'
               }
-            >
-              <Narrative
-                content={narrative}
-                stylesPath={narrativeStyles}
-                fhirServer={fhirServer}
-                onError={this.handleError}
-              />
-            </section>
-          ) : null}
-          {expansion ? (
-            <section
-              className={
-                activeTab === 'expansion'
-                  ? 'tab-content'
-                  : 'tab-content tab-content-hidden'
-              }
-            >
-              <ValueSetExpansion
-                expansion={expansion}
-                onError={this.handleError}
-              />
-            </section>
-          ) : null}
-          {bundle ? (
-            <section
-              className={
-                activeTab === 'bundle'
-                  ? 'tab-content'
-                  : 'tab-content tab-content-hidden'
-              }
-            >
-              <Bundle
-                fhirServer={fhirServer}
-                fhirVersion={fhirVersion}
-                narrativeStyles={narrativeStyles}
-                bundle={bundle}
-                format={format}
-                raw={raw}
-                supressEntries={
-                  activeTab === 'raw' && resource.resourceType === 'Bundle'
-                }
-                onError={this.handleError}
-              />
-            </section>
-          ) : null}
-          {raw ? (
-            <section
-              className={
-                activeTab === 'raw'
-                  ? 'tab-content'
-                  : 'tab-content tab-content-hidden'
-              }
-            >
-              <Raw content={raw} format={format} onError={this.handleError} />
-            </section>
-          ) : null}
-        </div>
-      )
-    }
-    return this.contentMap[JSON.stringify(this.state)]
+              onError={this.handleError}
+              pathPrefix={pathPrefix}
+            />
+          </section>
+        ) : null}
+        {raw && (activeTab === 'raw' || this.isResourceRendered(resource)) ? (
+          <section
+            onshow={this.setResourceRendered(resource)}
+            className={
+              activeTab === 'raw'
+                ? 'tab-content'
+                : 'tab-content tab-content-hidden'
+            }
+          >
+            <Raw content={raw} format={format} onError={this.handleError} />
+          </section>
+        ) : null}
+      </div>
+    )
   }
 }
 

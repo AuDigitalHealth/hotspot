@@ -23,6 +23,7 @@ class Bundle extends Component {
     format: PropTypes.string.isRequired,
     supressEntries: PropTypes.bool,
     onError: PropTypes.func,
+    pathPrefix: PropTypes.string,
   }
 
   constructor(props) {
@@ -68,6 +69,7 @@ class Bundle extends Component {
       narrativeStyles,
       format,
       supressEntries,
+      pathPrefix,
     } = this.props
     const { entries } = this.state
 
@@ -107,6 +109,7 @@ class Bundle extends Component {
                 className="fhir-resource fhir-resource-inline"
                 noTabSelectedAtLoad
                 onError={this.handleError}
+                pathPrefix={pathPrefix}
               />
             </div>
           )

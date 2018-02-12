@@ -1,5 +1,6 @@
 .info-box {
-  margin-bottom: 10px;
+  margin-bottom: 30px;
+  margin-left: 10px;
 }
 
 .info {
@@ -9,7 +10,7 @@
   border-radius: 6px;
   padding: 0 18px 0 80px;
   font-size: 14px;
-  max-width: 900px;
+  max-width: 800px;
   clear: left;
 }
 

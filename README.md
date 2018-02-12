@@ -57,6 +57,7 @@ The Docker image can be configured using the following environment variables:
   with the path `/CodeSystem/some-code-system` would retrieve the resource from
   http://ontoserver.csiro.au/stu3-latest/CodeSystem/some-code-system. Defaults to `https://ontoserver.csiro.au/stu3-latest`.
 * `HOTSPOT_FHIR_VERSION`: The version of FHIR (x.y.z) assumed to be in use by the FHIR server. Defaults to `3.0.1`.
+* `HOTSPOT_PATH_PREFIX`: The prefixed path at which hotspot is served (eg. `/myserver/ourhotspot`). Defaults to `''`
 * `HOTSPOT_NARRATIVE_STYLES`: A URL to a custom stylesheet to override styles within
   narrative content.
 * `HOTSPOT_PATH_ROUTES`: Provides a means of specifying custom path routing rules (see below).

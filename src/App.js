@@ -22,14 +22,18 @@ import csiroLogo from './img/csiro.svg'
 import './css/App.css'
 
 class App extends Component {
+  // TODO: Add or refactor use of routePaths
   static propTypes = {
-    config: PropTypes.object,
+    config: PropTypes.shape({
+      pathPrefix: PropTypes.string,
+    }),
   }
 
   static defaultProps = {
     config: {
       fhirServer: 'https://ontoserver.csiro.au/stu3-latest',
       fhirVersion: '3.0.1',
+      pathPrefix: '',
     },
   }
 
@@ -100,17 +104,16 @@ class App extends Component {
           <Router>
             <div>
               <Route
-                path="/"
                 render={({ location }) => this.showRouteMessage(location)}
               />
               <Switch>
                 <Route
-                  path="/:path"
+                  path={`${config.pathPrefix}/:path`}
                   render={({ location }) =>
                     this.processPathRoutes(
                       location,
                       <RemoteFhirResource
-                        path={location.pathname}
+                        path={location.pathname.replace(config.pathPrefix, '')}
                         query={removeParam(location.search, '_rIds')}
                         onLoad={this.handleLoad}
                         {...config}

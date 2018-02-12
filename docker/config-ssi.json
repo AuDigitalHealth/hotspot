@@ -3,4 +3,5 @@
   "fhirVersion": "<!--#echo var="hotspot_fhir_version" -->",
   "narrativeStyles": "<!--#echo var="hotspot_narrative_styles" -->",
   "pathRoutes": <!--#echo var="hotspot_path_routes" encoding="none" -->
+  "pathPrefix": <!--#echo var="hotspot_path_prefix" -->
 }

@@ -12,5 +12,6 @@ ENV HOTSPOT_FHIR_SERVER=https://ontoserver.csiro.au/stu3-latest
 ENV HOTSPOT_FHIR_VERSION=3.0.1
 ENV HOTSPOT_NARRATIVE_STYLES=/agency-narrative.css
 ENV HOTSPOT_PATH_ROUTES=[]
+ENV HOTSPOT_PATH_PREFIX=""
 
 CMD ["/usr/local/bin/start.sh"]
