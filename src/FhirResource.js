@@ -48,11 +48,10 @@ class FhirResource extends Component {
     noTabSelectedAtLoad: false,
   }
 
-  renderedRaw = {}
-
   constructor(props) {
     super(props)
     this.handleError = this.handleError.bind(this)
+    this.state = { renderedComponent: {} }
   }
 
   updateResource(props) {
@@ -114,12 +113,38 @@ class FhirResource extends Component {
     }
   }
 
-  setActiveTab(tabName) {
+  setActiveTab(tabName, resource) {
+    if (resource && !this.isComponentRendered(tabName, resource)) {
+      const { renderedComponent } = this.state
+      const renderedEntry = {
+        [tabName +
+        ':' +
+        resource.id +
+        ':' +
+        (resource.version ? resource.version : '')]: true,
+      }
+      this.setState(() => ({
+        renderedComponent: { ...renderedComponent, ...renderedEntry },
+      }))
+    }
     this.setState(
       () =>
         this.props.noTabSelectedAtLoad && this.state.activeTab === tabName
           ? { activeTab: undefined }
           : { activeTab: tabName },
+    )
+  }
+
+  isComponentRendered(tabName, resource) {
+    const { renderedComponent } = this.state
+    return (
+      renderedComponent[
+        tabName +
+          ':' +
+          resource.id +
+          ':' +
+          (resource.version ? resource.version : '')
+      ] === true
     )
   }
 
@@ -161,20 +186,6 @@ class FhirResource extends Component {
       return fullUrl.replace(urlProtocol + urlHost, fhirProtocol + urlHost)
     }
     return fullUrl
-  }
-
-  setResourceRendered(resource) {
-    this.renderedRaw[
-      resource.id + ':' + (resource.version ? resource.version : '')
-    ] = true
-  }
-
-  isResourceRendered(resource) {
-    return (
-      this.renderedRaw[
-        resource.id + ':' + (resource.version ? resource.version : '')
-      ] === true
-    )
   }
 
   render() {
@@ -233,7 +244,14 @@ class FhirResource extends Component {
   }
 
   renderTabs() {
-    const { fhirServer, fhirVersion, format, fullUrl, pathPrefix } = this.props
+    const {
+      fhirServer,
+      fhirVersion,
+      format,
+      resource,
+      fullUrl,
+      pathPrefix,
+    } = this.props
     const { narrative, expansion, bundle, valueSetUri, activeTab } = this.state
     const valueSetPath = valueSetExpansionPath(valueSetUri, fhirVersion, {
       pathPrefix,
@@ -243,7 +261,7 @@ class FhirResource extends Component {
         <ol>
           {narrative ? (
             <li
-              onClick={() => this.setActiveTab('narrative')}
+              onClick={() => this.setActiveTab('narrative', resource)}
               className={activeTab === 'narrative' ? 'active' : ''}
             >
               Narrative
@@ -251,7 +269,7 @@ class FhirResource extends Component {
           ) : null}
           {expansion ? (
             <li
-              onClick={() => this.setActiveTab('expansion')}
+              onClick={() => this.setActiveTab('expansion', resource)}
               className={activeTab === 'expansion' ? 'active' : ''}
             >
               Expansion
@@ -259,14 +277,14 @@ class FhirResource extends Component {
           ) : null}
           {bundle ? (
             <li
-              onClick={() => this.setActiveTab('bundle')}
+              onClick={() => this.setActiveTab('bundle', resource)}
               className={activeTab === 'bundle' ? 'active' : ''}
             >
               Bundle
             </li>
           ) : null}
           <li
-            onClick={() => this.setActiveTab('raw')}
+            onClick={() => this.setActiveTab('raw', resource)}
             className={activeTab === 'raw' ? 'active' : ''}
           >
             {format ? format.toUpperCase() : undefined}
@@ -360,17 +378,14 @@ class FhirResource extends Component {
               bundle={bundle}
               format={format}
               raw={raw}
-              supressEntries={
-                activeTab === 'raw' && resource.resourceType === 'Bundle'
-              }
               onError={this.handleError}
               pathPrefix={pathPrefix}
             />
           </section>
         ) : null}
-        {raw && (activeTab === 'raw' || this.isResourceRendered(resource)) ? (
+        {raw &&
+        (activeTab === 'raw' || this.isComponentRendered('raw', resource)) ? (
           <section
-            onshow={this.setResourceRendered(resource)}
             className={
               activeTab === 'raw'
                 ? 'tab-content'
