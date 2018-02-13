@@ -18,7 +18,8 @@
   },
   "extends": ["react-app"],
   "rules": {
-    "no-console": ["warn"],
-    "guard-for-in": "off"
+    "no-console": "warn",
+    "guard-for-in": "off",
+    "no-var": "error"
   }
 }

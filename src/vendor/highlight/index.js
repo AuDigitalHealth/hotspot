@@ -1,4 +1,4 @@
-var hljs = require('./highlight')
+const hljs = require('./highlight')
 
 hljs.registerLanguage('json', require('./languages/json'))
 hljs.registerLanguage('xml', require('./languages/xml'))

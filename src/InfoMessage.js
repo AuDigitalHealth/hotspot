@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import './css/InfoMessage.css'
 
-var HtmlToReactParser = require('html-to-react').Parser
+const HtmlToReactParser = require('html-to-react').Parser
 
 // Renders a standard Info message
 class InfoMessage extends Component {
@@ -21,7 +21,7 @@ class InfoMessage extends Component {
       output = '<p>' + message + '</p>'
     } else if (messages && messages.length > 0) {
       output += '<ul>'
-      for (var i in messages) {
+      for (const i in messages) {
         output += '<li>' + messages[i] + '</li>'
       }
       output += '</ul>'

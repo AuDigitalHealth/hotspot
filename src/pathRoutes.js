@@ -21,7 +21,7 @@ export const processPathRoutes = (location, routeConfig) => {
       search: location.search,
     }
     let routeIds = []
-    for (var i in routeConfig) {
+    for (const i in routeConfig) {
       const {
         id,
         message,
@@ -42,7 +42,7 @@ export const processPathRoutes = (location, routeConfig) => {
         }
         if (removeParams) {
           let removed = false
-          for (var k in removeParams) {
+          for (const k in removeParams) {
             const remParam = removeParams[k]
             if (containsParam(finalLocation.search, remParam)) {
               finalLocation.search = removeParam(finalLocation.search, remParam)
@@ -55,7 +55,7 @@ export const processPathRoutes = (location, routeConfig) => {
         }
         if (addParams) {
           let added = false
-          for (var j in addParams) {
+          for (const j in addParams) {
             const param = j
             if (!containsParam(finalLocation.search, param)) {
               finalLocation.search = addParam(
@@ -81,7 +81,7 @@ export const processPathRoutes = (location, routeConfig) => {
 }
 
 export const getMessageById = (routeConfig, routeId) => {
-  for (var i in routeConfig) {
+  for (const i in routeConfig) {
     if (routeConfig[i].id && routeConfig[i].id === routeId) {
       return routeConfig[i].message
     }
@@ -94,7 +94,7 @@ export const getRouteMessages = (location, routeConfig) => {
     const msgIds = getParam(location.search, '_rIds').split(',')
     let messages = []
     if (msgIds) {
-      for (var j in msgIds) {
+      for (const j in msgIds) {
         const msg = getMessageById(routeConfig, msgIds[j])
         if (msg) {
           messages.push(msg)

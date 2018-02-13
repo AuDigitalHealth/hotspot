@@ -37,7 +37,7 @@ export const removeParam = (query, param) => {
 
 // Adds any `@@param_name@@` parameters to the query component of a URL.
 export const addParam = (query, param, value) => {
-  var output = '' + query
+  let output = '' + query
   if (value !== undefined && value !== null) {
     output += output === '' ? '?' : '&'
     output += param + '=' + value

@@ -173,15 +173,15 @@ class FhirResource extends Component {
   }
 
   isCorrectFhirServer(fullUrl) {
-    var urlHost = this.getUrlHost(fullUrl)
-    var fhirHost = this.getUrlHost(this.props.fhirServer)
+    const urlHost = this.getUrlHost(fullUrl)
+    const fhirHost = this.getUrlHost(this.props.fhirServer)
     return urlHost === fhirHost
   }
 
   toCorrectProtocol(fullUrl) {
-    var urlHost = this.getUrlHost(fullUrl)
-    var urlProtocol = this.getUrlProtocol(fullUrl)
-    var fhirProtocol = this.getUrlProtocol(this.props.fhirServer)
+    const urlHost = this.getUrlHost(fullUrl)
+    const urlProtocol = this.getUrlProtocol(fullUrl)
+    const fhirProtocol = this.getUrlProtocol(this.props.fhirServer)
     if (urlProtocol !== fhirProtocol) {
       return fullUrl.replace(urlProtocol + urlHost, fhirProtocol + urlHost)
     }
