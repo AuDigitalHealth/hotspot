@@ -17,25 +17,31 @@ import {
 
 import { removeParam } from './fhir/common.js'
 
+import defaultConfig from './config/defaultConfig.json'
 import agencyLogo from './img/agency.svg'
 import csiroLogo from './img/csiro.svg'
 import './css/App.css'
 
 class App extends Component {
-  // TODO: Add or refactor use of routePaths
   static propTypes = {
-    config: PropTypes.shape({
-      pathPrefix: PropTypes.string,
-    }),
+    fhirServer: PropTypes.string,
+    fhirVersion: PropTypes.string,
+    narrativeStyles: PropTypes.string,
+    pathPrefix: PropTypes.string,
+    pathRoutes: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string,
+        message: PropTypes.string,
+        matchPattern: PropTypes.string,
+        addParams: PropTypes.shape({
+          _elements: PropTypes.arrayOf(PropTypes.string),
+          _count: PropTypes.number,
+        }),
+        removeParams: PropTypes.arrayOf(PropTypes.string),
+      }),
+    ),
   }
-
-  static defaultProps = {
-    config: {
-      fhirServer: 'https://ontoserver.csiro.au/stu3-latest',
-      fhirVersion: '3.0.1',
-      pathPrefix: '',
-    },
-  }
+  static defaultProps = defaultConfig
 
   constructor(props) {
     super(props)
@@ -46,7 +52,7 @@ class App extends Component {
     if (!location.pathname) {
       return
     }
-    const { config: { pathRoutes } } = this.props
+    const { pathRoutes } = this.props
     const finalLocation = processPathRoutes(location, pathRoutes)
     return location.pathname !== finalLocation.pathname ||
       location.search !== finalLocation.search ? (
@@ -57,7 +63,7 @@ class App extends Component {
   }
 
   showRouteMessage(location) {
-    const { config: { pathRoutes } } = this.props
+    const { pathRoutes } = this.props
     const messages = getRouteMessages(location, pathRoutes)
     resetRouteMessages(location)
     if (messages && messages.length > 0) {
@@ -78,7 +84,7 @@ class App extends Component {
   }
 
   render() {
-    const { config } = this.props
+    const { fhirServer, fhirVersion, narrativeStyles, pathPrefix } = this.props
 
     return (
       <div className="app">
@@ -108,15 +114,18 @@ class App extends Component {
               />
               <Switch>
                 <Route
-                  path={`${config.pathPrefix}/:path`}
+                  path={`${pathPrefix}/:path`}
                   render={({ location }) =>
                     this.processPathRoutes(
                       location,
                       <RemoteFhirResource
-                        path={location.pathname.replace(config.pathPrefix, '')}
+                        path={location.pathname.replace(pathPrefix, '')}
                         query={removeParam(location.search, '_rIds')}
+                        fhirServer={fhirServer}
+                        fhirVersion={fhirVersion}
+                        narrativeStyles={narrativeStyles}
+                        pathPrefix={pathPrefix}
                         onLoad={this.handleLoad}
-                        {...config}
                       />,
                     )
                   }

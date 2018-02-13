@@ -1,0 +1,139 @@
+{
+  "fhirServer": "https://api.healthterminologies.gov.au/integration/v2/fhir",
+  "fhirVersion": "3.0.1",
+  "narrativeStyles": "/hotspot/agency-narrative.css",
+  "pathPrefix": "/integration/v2/fhir",
+  "pathRoutes": [
+    {
+      "id": "00",
+      "message":
+        "The '_format' parameter has been removed from the provided URL. It is not supported via the browser representation of this terminology server.",
+      "matchPattern": ".*",
+      "removeParams": ["_format"]
+    },
+    {
+      "id": "01",
+      "matchPattern": "/integration/v2/fhir[/]*$",
+      "addSuffix": "metadata"
+    },
+    {
+      "id": "02",
+      "message":
+        "Please be aware that you are viewing a subset of this bundle. The 'concept' attribute has been deliberately excluded from this view. The full content of each resource can be viewed, via the 'Full Resource' button.",
+      "matchPattern": "/CodeSystem[/]*$",
+      "addParams": {
+        "_elements": [
+          "resourceType",
+          "id",
+          "meta",
+          "implicitRules",
+          "language",
+          "text",
+          "contained",
+          "extension",
+          "modifierExtension",
+          "url",
+          "identifier",
+          "version",
+          "name",
+          "title",
+          "status",
+          "experimental",
+          "date",
+          "publisher",
+          "contact",
+          "description",
+          "useContext",
+          "jurisdiction",
+          "purpose",
+          "copyright",
+          "caseSensitive",
+          "valueSet",
+          "hierarchyMeaning",
+          "compositional",
+          "versionNeeded",
+          "content",
+          "count",
+          "filter",
+          "property"
+        ],
+        "_count": 100
+      }
+    },
+    {
+      "id": "03",
+      "message":
+        "Please be aware that you are viewing a subset of this bundle. The 'compose' attribute has been deliberately excluded from this view. The full content of each resource can be viewed, via the 'Full Resource' button.",
+      "matchPattern": "/ValueSet[/]*$",
+      "addParams": {
+        "_elements": [
+          "resourceType",
+          "id",
+          "meta",
+          "implicitRules",
+          "language",
+          "text",
+          "contained",
+          "extension",
+          "modifierExtension",
+          "url",
+          "identifier",
+          "version",
+          "name",
+          "title",
+          "status",
+          "experimental",
+          "date",
+          "publisher",
+          "contact",
+          "description",
+          "useContext",
+          "jurisdiction",
+          "immutable",
+          "purpose",
+          "copyright",
+          "extensible",
+          "expansion"
+        ],
+        "_count": 100
+      }
+    },
+    {
+      "id": "04",
+      "message":
+        "Please be aware that you are viewing a subset of this bundle. The 'group' attribute has been deliberately excluded from this view. The full content of each resource can be viewed, via the 'Full Resource' button.",
+      "matchPattern": "/ConceptMap[/]*$",
+      "addParams": {
+        "_elements": [
+          "resourceType",
+          "id",
+          "meta",
+          "implicitRules",
+          "language",
+          "text",
+          "contained",
+          "extension",
+          "modifierExtension",
+          "url",
+          "identifier",
+          "version",
+          "name",
+          "title",
+          "status",
+          "experimental",
+          "date",
+          "publisher",
+          "contact",
+          "description",
+          "useContext",
+          "jurisdiction",
+          "purpose",
+          "copyright",
+          "source",
+          "target"
+        ],
+        "_count": 100
+      }
+    }
+  ]
+}

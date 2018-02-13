@@ -16,9 +16,9 @@ class RemoteFhirResource extends Component {
     fhirServer: PropTypes.string.isRequired,
     fhirVersion: PropTypes.string.isRequired,
     narrativeStyles: PropTypes.string,
+    pathPrefix: PropTypes.string,
     onLoad: PropTypes.func,
     onError: PropTypes.func,
-    pathPrefix: PropTypes.string,
   }
 
   constructor(props) {
@@ -120,12 +120,12 @@ class RemoteFhirResource extends Component {
               fhirServer={fhirServer}
               fhirVersion={fhirVersion}
               narrativeStyles={narrativeStyles}
+              pathPrefix={pathPrefix}
               resource={resource}
               format={format}
               raw={raw}
               onLoad={this.handleLoad}
               onError={this.handleError}
-              pathPrefix={pathPrefix}
             />
           </div>
         )
