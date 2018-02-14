@@ -12,11 +12,9 @@ declare -A vars=( \
 
 # Work out which of the available variables have been set.
 declare -A varsSet
-for var in "${!vars[@]}"
-do
+for var in "${!vars[@]}"; do
   value=${vars[$var]}
-  if [[ -v $value ]]
-  then
+  if [[ -v $value ]]; then
     varsSet[$var]=${!value}
   fi
 done
@@ -26,11 +24,15 @@ lastIndex=$(( ${#varsSet[@]} - 1 ))
 
 # Iterate over the set variables and echo out the corresponding JSON.
 echo "{"
-for (( i=0 ; i < "${#varsSet[@]}" ; i++ ))
-do
+for (( i=0 ; i < "${#varsSet[@]}" ; i++ )); do
   key=(${keys[$i]})
   value=(${varsSet[$key]})
-  kvPair="  \"$key\": \"$value\""
+  # All config variables are quoted except `pathRoutes`.
+  if [[ "$key" == "pathRoutes" ]]; then
+    kvPair="  \"$key\": $value"
+  else
+    kvPair="  \"$key\": \"$value\""
+  fi
   # If this is the last variable, don't print out a comma at the end of the
   # line.
   if [[ ! $i -eq $lastIndex ]]; then kvPair+=","; fi
