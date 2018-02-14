@@ -151,14 +151,14 @@ response.
     },
     {
       "id": "01",
-      "matchPattern": "/integration/v2/fhir[/]*",
+      "matchPattern": "/integration/v2/fhir[/]*$",
       "addSuffix": "metadata"
     },
     {
       "id": "02",
       "message":
         "Please be aware that you are viewing a subset of this bundle. The 'concept' attribute has been deliberately excluded from this view. The full content of each resource can be viewed, via the 'Full Resource' button.",
-      "matchPattern": "/CodeSystem[/]*",
+      "matchPattern": "/CodeSystem[/]*$",
       "addParams": {
         "_elements": [
           "resourceType",
@@ -202,7 +202,7 @@ response.
       "id": "03",
       "message":
         "Please be aware that you are viewing a subset of this bundle. The 'compose' attribute has been deliberately excluded from this view. The full content of each resource can be viewed, via the 'Full Resource' button.",
-      "matchPattern": "/ValueSet[/]*",
+      "matchPattern": "/ValueSet[/]*$",
       "addParams": {
         "_elements": [
           "resourceType",
@@ -240,7 +240,7 @@ response.
       "id": "04",
       "message":
         "Please be aware that you are viewing a subset of this bundle. The 'group' attribute has been deliberately excluded from this view. The full content of each resource can be viewed, via the 'Full Resource' button.",
-      "matchPattern": "/ConceptMap[/]*",
+      "matchPattern": "/ConceptMap[/]*$",
       "addParams": {
         "_elements": [
           "resourceType",
