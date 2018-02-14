@@ -1,7 +1,0 @@
-{
-<!--#if expr="$hotspot_fhir_server != NULL"-->  "fhirServer": "<!--#echo var="hotspot_fhir_server"-->",
-<!--#endif--><!--#if expr="$hotspot_fhir_version != NULL"-->  "fhirVersion": "<!--#echo var="hotspot_fhir_version"-->",
-<!--#endif--><!--#if expr="$hotspot_narrative_styles != NULL"-->  "narrativeStyles": "<!--#echo var="hotspot_narrative_styles"-->",
-<!--#endif--><!--#if expr="$hotspot_path_routes != NULL"-->  "pathRoutes": <!--#echo var="hotspot_path_routes" encoding="none"-->,
-<!--#endif--><!--#if expr="$hotspot_path_prefix != NULL"-->  "pathPrefix": "<!--#echo var="hotspot_path_prefix"-->"
-<!--#endif-->}
