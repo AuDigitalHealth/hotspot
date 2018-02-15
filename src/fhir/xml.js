@@ -48,7 +48,10 @@ export const extractXmlMetadata = async doc => {
     // Use the `valueSet` element as the ValueSet URI if the resource is a
     // CodeSystem.
     const valueSet = resource.querySelector(':scope > valueSet')
-    metadata.valueSetUri = valueSet ? valueSet.getAttribute('value') : undefined
+    const url = resource.querySelector(':scope > url')
+    metadata.valueSetUri = valueSet
+      ? valueSet.getAttribute('value')
+      : url ? url.getAttribute('value') : undefined
   }
   // Save the whole resource if this is a Bundle.
   if (metadata.resourceType === 'Bundle') {

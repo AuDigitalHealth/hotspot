@@ -67,6 +67,28 @@ describe('extractRawJsonMetadata', () => {
         publisher: 'Nationwide Health Information Network (NHIN)',
       },
     ],
+    [
+      'v3-EducationLevel-novs.json',
+      {
+        resourceType: 'CodeSystem',
+        title: 'v3 Code System EducationLevel',
+        url: 'http://hl7.org/fhir/v3/EducationLevel',
+        version: '2016-03-23',
+        valueSetUri: 'http://hl7.org/fhir/v3/EducationLevel',
+        resourceStatus: 'active',
+        publisher: 'HL7, Inc',
+      },
+    ],
+    [
+      'v3-EducationLevel-novs-nourl.json',
+      {
+        resourceType: 'CodeSystem',
+        title: 'v3 Code System EducationLevel',
+        version: '2016-03-23',
+        resourceStatus: 'active',
+        publisher: 'HL7, Inc',
+      },
+    ],
     ['CodeSystem-search.json', { resourceType: 'Bundle', title: 'Bundle' }],
   ]
   for (const resource of jsonResources) {

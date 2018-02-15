@@ -47,10 +47,13 @@ export const extractJsonMetadata = async parsed => {
     if (metadata.resourceType === 'ValueSet' && metadata.url) {
       // Use the `url` element as the ValueSet URI if the resource is a ValueSet.
       metadata.valueSetUri = metadata.url
-    } else if (metadata.resourceType === 'CodeSystem' && parsed.valueSet) {
+    } else if (
+      metadata.resourceType === 'CodeSystem' &&
+      (parsed.valueSet || parsed.url)
+    ) {
       // Use the `valueSet` element as the ValueSet URI if the resource is a
       // CodeSystem.
-      metadata.valueSetUri = parsed.valueSet
+      metadata.valueSetUri = parsed.valueSet || parsed.url
     }
     // Note the presence of an expansion, in the case of a ValueSet.
     if (metadata.resourceType === 'ValueSet' && parsed.expansion) {
