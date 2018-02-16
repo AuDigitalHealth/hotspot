@@ -68,7 +68,7 @@ class Raw extends Component {
 
   highlightCode() {
     if (this.code) {
-      let attMatches = this.code.innerText.match(/"[a-zA-Z0-9-]+"[ ]*:/g)
+      let attMatches = this.code.textContent.match(/"[a-zA-Z0-9-]+"[ ]*:/g)
       if (!attMatches || attMatches.length < 5000) {
         Highlight.highlightBlock(this.code)
       }
