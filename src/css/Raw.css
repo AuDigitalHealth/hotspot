@@ -2,6 +2,8 @@
   font-size: 13px;
 }
 
-.raw pre {
-  background-color: transparent;
+.raw-line {
+  display: block;
+  white-space: pre;
+  font-family: monospace;
 }

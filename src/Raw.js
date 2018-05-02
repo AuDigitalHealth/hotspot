@@ -37,8 +37,14 @@ class Raw extends Component {
     this.highlightCode()
   }
 
-  componentDidUpdate() {
-    this.highlightCode()
+  componentDidUpdate(_, prevState) {
+    const { highlightedLines: prevHighlightedLines } = prevState,
+      { highlightedLines } = this.state
+    if (
+      prevHighlightedLines &&
+      prevHighlightedLines.length !== highlightedLines.length
+    )
+      this.highlightCode()
   }
 
   componentWillReceiveProps(nextProps) {
@@ -62,35 +68,39 @@ class Raw extends Component {
     return (
       this.props.content !== nextProps.content ||
       this.props.format !== nextProps.format ||
+      this.state.highlightedLines !== nextState.highlightedLines ||
       this.state.prettyContent !== nextState.prettyContent
     )
   }
 
   highlightCode() {
-    if (this.code) {
-      let attMatches = this.code.textContent.match(/"[a-zA-Z0-9-]+"[ ]*:/g)
-      if (!attMatches || attMatches.length < 5000) {
-        Highlight.highlightBlock(this.code)
-      }
-    }
+    const { format } = this.props,
+      { prettyContent } = this.state,
+      highlightedLines = Highlight.highlight(
+        format,
+        prettyContent,
+        true,
+      ).value.split('\n')
+    this.setState(() => ({ highlightedLines }))
   }
 
   render() {
-    const { format } = this.props
-    const { prettyContent } = this.state
+    return <div className="raw">{this.renderLines()}</div>
+  }
 
-    return (
-      <div className="raw">
-        <pre
-          className={format}
-          ref={el => {
-            this.code = el
-          }}
-        >
-          {prettyContent}
-        </pre>
-      </div>
-    )
+  renderLines() {
+    const { highlightedLines } = this.state
+    return highlightedLines
+      ? highlightedLines
+          .slice(0, 10)
+          .map((line, i) => (
+            <span
+              className="raw-line"
+              key={i}
+              dangerouslySetInnerHTML={{ __html: line }}
+            />
+          ))
+      : null
   }
 
   static prettifyContent(content, format) {
