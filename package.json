@@ -1,6 +1,13 @@
 {
   "name": "hotspot",
-  "version": "0.1.0",
+  "description":
+    "A human-friendly HTML landing page for users resolving URLs within their browser that point to resources on a FHIR server.",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "John Grimes",
+    "email": "John.Grimes@digitalhealth.gov.au"
+  },
+  "repository": "github:AuDigitalHealth/hotspot",
   "private": true,
   "dependencies": {
     "axios": "^0.16.2",
