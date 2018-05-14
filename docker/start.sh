@@ -2,6 +2,6 @@
 set -e
 
 # Build a configuration file from environment variables.
-/buildConfig.sh >/usr/share/nginx/html/config.json
+/buildConfig.sh >/var/www/html/config.json
 
-exec nginx -g 'daemon off;'
+/usr/local/bin/node /proxy.js

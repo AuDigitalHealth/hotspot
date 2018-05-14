@@ -68,6 +68,10 @@ The Docker image can be configured using the following environment variables:
   `/CodeSystem/some-code-system` would retrieve the resource from
   http://ontoserver.csiro.au/stu3-latest/CodeSystem/some-code-system. Defaults
   to `https://ontoserver.csiro.au/stu3-latest`.
+* `HOTSPOT_PROXY_TARGET`: The FHIR endpoint used for proxying requests from the
+  Docker container to the FHIR server. This may be different to
+  `HOTSPOT_FHIR_SERVER` if the FHIR server is referred to by a different
+  hostname when viewed from your Hotspot Docker container.
 * `HOTSPOT_FHIR_VERSION`: The version of FHIR (x.y.z) assumed to be in use by
   the FHIR server. Defaults to `3.0.1`.
 * `HOTSPOT_PATH_PREFIX`: A prefix to append to all routes within the Hotspot
@@ -81,7 +85,7 @@ The Docker image can be configured using the following environment variables:
 
 ##### Example Docker Compose file
 
-```
+```yaml
 version: "3"
 
 services:
@@ -96,6 +100,50 @@ services:
       HOTSPOT_PATH_ROUTES: "[{ 'matchPattern': '.*', 'removeParams': [ '_format' ] }]"
 ```
 
+##### Example Docker Compose file, incorporating FHIR server (Ontoserver)
+
+This expands upon the
+[official Ontoserver Docker Compose example](http://ontoserver.csiro.au/docs).
+
+```yaml
+version: '2'
+volumes:
+  onto:
+    driver: local
+  pgdata:
+    driver: local
+services:
+  db:
+    image: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  ontoserver:
+    image: aehrc/ontoserver:ctsa-5.1
+    container_name: ontoserver
+    depends_on:
+      - db
+    expose:
+      - "8080"
+    environment:
+      - authentication.oauth.endpoint.client_id.0=NCTS_ACCESS_CODE
+      - authentication.oauth.endpoint.client_secret.0=NCTS_CLIENT_SECRET
+      - JAVA_OPTS=-Xmx4G        # Minimum
+#      - JAVA_OPTS=-Xmx8G      # Preferred
+    volumes:
+      - onto:/var/onto
+  hotspot:
+    image: hotspot
+    ports:
+      - '8080:80'
+    depends_on:
+      - ontoserver
+    environment:
+      - HOTSPOT_FHIR_SERVER=http://somedomain.com/fhir
+      - HOTSPOT_PROXY_TARGET=http://ontoserver:8080/fhir
+      - HOTSPOT_PATH_PREFIX=/fhir
+      - HOTSPOT_NARRATIVE_STYLES=/agency-narrative.css
+```
+
 ##### Path Routing
 
 Path routing rules can be used to disallow requests that would otherwise render
@@ -106,10 +154,10 @@ want to redirect the client to a URL that limits the amount of data that would
 otherwise be returned (-->
 `<FHIR_ENDPOINT>/CodeSystem?_elements=id,name,status`).
 
-Another common example would be to strip the `_format` parameter
-(eg. `<FHIR_ENDPOINT>/metadata?_format=xml` --> `<FHIR_ENDPOINT>/metadata`).
-When provided with a location, with a pathname that matches a rule in the
-pathRoute config, the corresponding rule is applied to the redirect URL.
+Another common example would be to strip the `_format` parameter (eg.
+`<FHIR_ENDPOINT>/metadata?_format=xml` --> `<FHIR_ENDPOINT>/metadata`). When
+provided with a location, with a pathname that matches a rule in the pathRoute
+config, the corresponding rule is applied to the redirect URL.
 
 **NOTE:** `matchPattern` supports regular expressions.
 
