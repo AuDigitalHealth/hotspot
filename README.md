@@ -134,7 +134,7 @@ services:
   hotspot:
     image: hotspot
     ports:
-      - '8080:80'
+      - '80:80'
     depends_on:
       - ontoserver
     environment:
