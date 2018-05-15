@@ -1,5 +1,6 @@
 const express = require('express'),
   path = require('path'),
+  url = require('url'),
   proxy = require('http-proxy-middleware'),
   uuid = require('uuid/v4'),
   compression = require('compression'),
@@ -15,7 +16,13 @@ const {
 // Returns true if a request contains information that indicates that it would
 // prefer a HTML response.
 const reqIsForHtml = req => {
-  return req.headers.accept.match(/text\/html/)
+  if (req.headers.accept.match(/text\/html/)) return true
+  else {
+    // Support the `_format` query parameter, as defined by FHIR.
+    const parsedUrl = url.parse(req.url),
+      format = new url.URLSearchParams(parsedUrl.search).get('_format')
+    return format === 'html' || format === 'text/html' ? true : false
+  }
 }
 
 // Middleware that serves up Hotspot when client signals that they want HTML.
