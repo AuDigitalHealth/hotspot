@@ -41,7 +41,11 @@ class RemoteFhirResource extends Component {
   async getResource(props) {
     try {
       const { fhirServer, path, query } = props
-      const response = await http.get(fhirServer + path + query)
+      const response = await http.get(fhirServer + path + query, {
+        headers: {
+          Accept: 'application/fhir+json, application/fhir+xml;q=0.9',
+        },
+      })
       const format = sniffFormat(response.headers['content-type'])
       return {
         resource: response.data,
