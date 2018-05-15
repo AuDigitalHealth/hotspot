@@ -1,6 +1,6 @@
 FROM node
 
-RUN npm install express http-proxy-middleware
+RUN npm install express http-proxy-middleware uuid compression bunyan
 
 COPY docker/proxy.js /
 COPY docker/start.sh /

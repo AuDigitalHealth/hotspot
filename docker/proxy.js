@@ -1,12 +1,16 @@
 const express = require('express'),
   path = require('path'),
-  proxy = require('http-proxy-middleware')
+  proxy = require('http-proxy-middleware'),
+  uuid = require('uuid/v4'),
+  compression = require('compression'),
+  bunyan = require('bunyan')
 
 const {
     HOTSPOT_PROXY_TARGET: fhirServer,
     HOTSPOT_WEB_ROOT: webRoot,
   } = process.env,
-  app = express()
+  app = express(),
+  logger = bunyan.createLogger({ name: 'hotspot' })
 
 // Returns true if a request contains information that indicates that it would
 // prefer a HTML response.
@@ -22,12 +26,56 @@ const serveHtml = (req, res, next) => {
   } else next()
 }
 
+// Middleware that logs all requests and responses.
+const logRequest = (req, res, next) => {
+  const id = req.headers['X-CID'] || uuid(),
+    startTime = process.hrtime()
+  res.setHeader('X-CID', id)
+  // Include request ID in all log messages.
+  req.log = logger.child({
+    requestId: id,
+  })
+  req.log.info({
+    event: 'REQ_RECV',
+    method: req.method,
+    path: req.url,
+    headers: req.headers,
+  })
+  next()
+  res.on('finish', () => {
+    const diffHr = process.hrtime(startTime),
+      diff = ((diffHr[0] * 1e9 + diffHr[1]) / 1e6).toFixed(0)
+    req.log.info({
+      event: 'RES_FINISHED',
+      statusCode: res.statusCode,
+      statusMessage: res.statusMessage,
+      timeMs: diff,
+      headers: res.getHeaders(),
+    })
+  })
+}
+
+// Error handler.
+const errorHandler = (error, req, res, next) => {
+  req.log.error({
+    error,
+    errorStackTrace: error.stack,
+  })
+  res.status(500).end()
+}
+
 // Set the Cache-Control header for static files that have a hash in their filename and will not ever change.
 const setHeaders = (res, path) => {
   res.setHeader('Cache-Control', 'no-cache')
   if (path.match(/\/static\//))
     res.setHeader('Cache-Control', 'max-age=31536000')
 }
+
+// Log all requests and responses.
+app.use(logRequest)
+
+// Compress all compressible responses.
+app.use(compression())
 
 // Serve up files from the static directory, e.g. JavaScript, CSS and image
 // files.
@@ -37,6 +85,26 @@ app.use('/', express.static(path.resolve(webRoot), { setHeaders }))
 app.use(serveHtml)
 
 // Proxy back to the FHIR server in all other cases.
-app.use(proxy({ target: fhirServer, prependPath: false }))
+app.use(
+  proxy({
+    target: fhirServer,
+    prependPath: false,
+    preserveHeaderKeyCase: true,
+    onError: (error, req, res) => {
+      req.log.error({
+        error,
+        errorStackTrace: error.stack,
+      })
+      res.status(502).end()
+    },
+  }),
+)
 
+// Catch and handle errors.
+app.use(errorHandler)
+
+// Remove the `X-Powered-By: express` header.
+app.disable('x-powered-by')
+
+// Start the server on port 80.
 app.listen(80)
