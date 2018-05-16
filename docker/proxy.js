@@ -28,8 +28,10 @@ const reqIsForHtml = req => {
 // Middleware that serves up Hotspot when client signals that they want HTML.
 const serveHtml = (req, res, next) => {
   if (reqIsForHtml(req)) {
-    res.setHeader('Cache-Control', 'no-cache')
-    res.sendFile(path.resolve(webRoot, 'index.html'))
+    res.sendFile(path.resolve(webRoot, 'index.html'), {
+      headers: { 'Cache-Control': 'no-cache' },
+      etag: false,
+    })
   } else next()
 }
 
@@ -71,13 +73,6 @@ const errorHandler = (error, req, res, next) => {
   res.status(500).end()
 }
 
-// Set the Cache-Control header for static files that have a hash in their filename and will not ever change.
-const setHeaders = (res, path) => {
-  res.setHeader('Cache-Control', 'no-cache')
-  if (path.match(/\/static\//))
-    res.setHeader('Cache-Control', 'max-age=31536000')
-}
-
 // Log all requests and responses.
 app.use(logRequest)
 
@@ -86,7 +81,24 @@ app.use(compression())
 
 // Serve up files from the static directory, e.g. JavaScript, CSS and image
 // files.
-app.use('/', express.static(path.resolve(webRoot), { setHeaders }))
+app.use(
+  '/static',
+  express.static(path.resolve(webRoot, 'static'), {
+    index: false,
+    redirect: false,
+    setHeaders: res => res.setHeader('Cache-Control', 'max-age=31536000'),
+  }),
+)
+
+// Serve up files from outside the static directory, except `index.html``.
+app.use(
+  '/',
+  express.static(path.resolve(webRoot), {
+    index: false,
+    redirect: false,
+    setHeaders: res => res.setHeader('Cache-Control', 'no-cache'),
+  }),
+)
 
 // Serve up Hotspot if the client is asking for a HTML representation.
 app.use(serveHtml)
