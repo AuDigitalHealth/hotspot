@@ -27,7 +27,8 @@ const reqIsForHtml = req => {
 
 // Middleware that serves up Hotspot when client signals that they want HTML.
 const serveHtml = (req, res, next) => {
-  if (reqIsForHtml(req)) {
+  // Serve up index.html if the request is asking for HTML OR if proxying is disabled.
+  if (reqIsForHtml(req) || !fhirServer) {
     res.sendFile(path.resolve(webRoot, 'index.html'), {
       headers: { 'Cache-Control': 'no-cache' },
       etag: false,
