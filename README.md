@@ -1,11 +1,13 @@
-## Hotspot
+[![CircleCI Build Status](https://circleci.com/gh/AuDigitalHealth/hotspot/tree/master.svg?style=shield)](https://circleci.com/gh/AuDigitalHealth/hotspot)
+
+# Hotspot
 
 A human-friendly HTML landing page for users resolving URLs within their browser
 that point to resources on a FHIR server.
 
 This is a pure client-side app that is configured to point to a FHIR endpoint.
 
-#### Features
+## Features
 
 * Rendering of raw JSON and XML resources, including pretty-printing and syntax
   highlighting.
@@ -27,14 +29,14 @@ This is a pure client-side app that is configured to point to a FHIR endpoint.
 It can be configured with a custom stylesheet to be applied to narratives within
 FHIR resources.
 
-#### Common tasks
+## Common tasks
 
-##### Install local development dependencies
+### Install local development dependencies
 
 * Node.js (https://nodejs.org/)
 * Yarn (https://yarnpkg.com/en/docs/install)
 
-##### Run it up locally
+### Run it up locally
 
 ```
 yarn
@@ -43,13 +45,13 @@ yarn start
 
 Edit `public/config.json` to customise.
 
-##### Build for production
+### Build for production
 
 ```
 yarn build
 ```
 
-##### Build the Docker image
+### Build the Docker image
 
 Requires the `DOCKER_IMAGE` environment variable to be set.
 
@@ -57,7 +59,7 @@ Requires the `DOCKER_IMAGE` environment variable to be set.
 yarn dockerize
 ```
 
-#### Configuration
+## Configuration
 
 The Docker image can be configured using the following environment variables:
 
@@ -83,7 +85,7 @@ The Docker image can be configured using the following environment variables:
 * `HOTSPOT_PATH_ROUTES`: Provides a means of specifying custom path routing
   rules (see [Path Routing](#path-routing)).
 
-##### Example Docker Compose file
+### Example Docker Compose file
 
 ```yaml
 version: "3"
@@ -100,7 +102,7 @@ services:
       HOTSPOT_PATH_ROUTES: "[{ 'matchPattern': '.*', 'removeParams': [ '_format' ] }]"
 ```
 
-##### Example Docker Compose file, incorporating FHIR server (Ontoserver)
+### Example Docker Compose file, incorporating FHIR server (Ontoserver)
 
 This expands upon the
 [official Ontoserver Docker Compose example](http://ontoserver.csiro.au/docs).
@@ -144,7 +146,7 @@ services:
       - HOTSPOT_NARRATIVE_STYLES=/agency-narrative.css
 ```
 
-##### Path Routing
+### Path Routing
 
 Path routing rules can be used to disallow requests that would otherwise render
 Hotspot to be non-performant.
@@ -181,7 +183,7 @@ response.
 * **message**: An informational message to be reported, after the client is
   re-routed.
 
-##### Default configuration
+### Default configuration
 
 ```
 {
@@ -325,7 +327,7 @@ response.
 }
 ```
 
-#### Roadmap
+## Roadmap
 
 * Pagination of ValueSet expansions and Bundle entries.
 * Rendering of Parameters resources.
