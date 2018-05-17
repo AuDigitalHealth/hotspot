@@ -103,21 +103,24 @@ app.use(
 // Serve up Hotspot if the client is asking for a HTML representation.
 app.use(serveHtml)
 
-// Proxy back to the FHIR server in all other cases.
-app.use(
-  proxy({
-    target: fhirServer,
-    prependPath: false,
-    preserveHeaderKeyCase: true,
-    onError: (error, req, res) => {
-      req.log.error({
-        error,
-        errorStackTrace: error.stack,
-      })
-      res.status(502).end()
-    },
-  }),
-)
+// Proxy back to the FHIR server in all other cases. Only enable proxying if the
+// `HOTSPOT_PROXY_TARGET` environment variable is set.
+if (fhirServer) {
+  app.use(
+    proxy({
+      target: fhirServer,
+      prependPath: false,
+      preserveHeaderKeyCase: true,
+      onError: (error, req, res) => {
+        req.log.error({
+          error,
+          errorStackTrace: error.stack,
+        })
+        res.status(502).end()
+      },
+    }),
+  )
+}
 
 // Catch and handle errors.
 app.use(errorHandler)
