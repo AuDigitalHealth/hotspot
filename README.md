@@ -1,3 +1,5 @@
+[![CircleCI Build Status](https://circleci.com/gh/AuDigitalHealth/hotspot/tree/master.svg?style=shield)](https://circleci.com/gh/AuDigitalHealth/hotspot)
+
 # Hotspot
 
 A human-friendly HTML landing page for users resolving URLs within their browser
