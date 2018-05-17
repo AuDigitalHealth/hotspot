@@ -16,7 +16,7 @@ const {
 // Returns true if a request contains information that indicates that it would
 // prefer a HTML response.
 const reqIsForHtml = req => {
-  if (req.headers.accept.match(/text\/html/)) return true
+  if (req.headers.accept && req.headers.accept.match(/text\/html/)) return true
   else {
     // Support the `_format` query parameter, as defined by FHIR.
     const parsedUrl = url.parse(req.url),
