@@ -44,6 +44,8 @@ class RemoteFhirResource extends Component {
       const response = await http.get(fhirServer + path + query, {
         headers: {
           Accept: 'application/fhir+json, application/fhir+xml;q=0.9',
+          Pragma: 'no-cache',
+          'Cache-Control': 'no-cache',
         },
       })
       const format = sniffFormat(response.headers['content-type'])
