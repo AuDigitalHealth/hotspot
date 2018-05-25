@@ -72,7 +72,12 @@ class RemoteFhirResource extends Component {
       const opOutcome = opOutcomeFromXmlResponse(response)
       if (opOutcome) throw opOutcome
     }
-    if (response.status === 404) {
+    if (response.status === 304) {
+      throw new Error(
+        'Server returned a 304 status, without a FHIR resource in the response body. ' +
+          'Hotspot does not support loading FHIR resources from the browser cache',
+      )
+    } else if (response.status === 404) {
       throw new Error(
         `The resource you requested was not found: "${this.props.path}"`,
       )
