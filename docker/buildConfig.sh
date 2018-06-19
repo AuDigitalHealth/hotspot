@@ -8,6 +8,7 @@ declare -A vars=( \
   [narrativeStyles]=HOTSPOT_NARRATIVE_STYLES \
   [pathRoutes]=HOTSPOT_PATH_ROUTES \
   [pathPrefix]=HOTSPOT_PATH_PREFIX \
+  [version]=HOTSPOT_VERSION \
 )
 
 # Work out which of the available variables have been set.

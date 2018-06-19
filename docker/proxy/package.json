@@ -1,0 +1,12 @@
+{
+  "name": "hotspot-proxy",
+  "main": "proxy.js",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "bunyan": "^1.8.12",
+    "compression": "^1.7.2",
+    "express": "^4.16.3",
+    "http-proxy-middleware": "^0.18.0",
+    "uuid": "^3.2.1"
+  }
+}

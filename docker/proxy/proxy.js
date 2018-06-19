@@ -9,9 +9,10 @@ const express = require('express'),
 const {
     HOTSPOT_PROXY_TARGET: fhirServer,
     HOTSPOT_WEB_ROOT: webRoot,
+    HOTSPOT_VERSION: version,
   } = process.env,
   app = express(),
-  logger = bunyan.createLogger({ name: 'hotspot' })
+  logger = bunyan.createLogger({ name: 'hotspot', appVersion: version })
 
 // Returns true if a request contains information that indicates that it would
 // prefer a HTML response.
@@ -45,23 +46,29 @@ const logRequest = (req, res, next) => {
   req.log = logger.child({
     requestId: id,
   })
-  req.log.info({
-    event: 'REQ_RECV',
-    method: req.method,
-    path: req.url,
-    headers: req.headers,
-  })
+  req.log.info(
+    {
+      event: 'REQ_RECV',
+      method: req.method,
+      path: req.url,
+      headers: req.headers,
+    },
+    'Request received',
+  )
   next()
   res.on('finish', () => {
     const diffHr = process.hrtime(startTime),
       diff = ((diffHr[0] * 1e9 + diffHr[1]) / 1e6).toFixed(0)
-    req.log.info({
-      event: 'RES_FINISHED',
-      statusCode: res.statusCode,
-      statusMessage: res.statusMessage,
-      timeMs: diff,
-      headers: res.getHeaders(),
-    })
+    req.log.info(
+      {
+        event: 'RES_FINISHED',
+        statusCode: res.statusCode,
+        statusMessage: res.statusMessage,
+        timeMs: diff,
+        headers: res.getHeaders(),
+      },
+      'Response returned',
+    )
   })
 }
 
@@ -113,10 +120,13 @@ if (fhirServer) {
       prependPath: false,
       preserveHeaderKeyCase: true,
       onError: (error, req, res) => {
-        req.log.error({
-          error,
-          errorStackTrace: error.stack,
-        })
+        req.log.error(
+          {
+            error,
+            errorStackTrace: error.stack,
+          },
+          'Error occurred upon proxy',
+        )
         res.status(502).end()
       },
     }),
@@ -130,4 +140,6 @@ app.use(errorHandler)
 app.disable('x-powered-by')
 
 // Start the server on port 80.
-app.listen(80)
+app.listen(80, null, null, () =>
+  logger.info({ event: 'APP_STARTED' }, 'Hotspot proxy started on port 80'),
+)
