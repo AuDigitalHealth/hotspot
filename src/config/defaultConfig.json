@@ -13,7 +13,7 @@
     },
     {
       "id": "01",
-      "matchPattern": "/integration/v2/fhir[/]*$",
+      "matchPattern": "/integration/[^/]+/fhir[/]*$",
       "addSuffix": "metadata"
     },
     {
