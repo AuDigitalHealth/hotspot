@@ -18,7 +18,7 @@
     "lodash.pick": "^4.4.0",
     "prop-types": "^15.5.10",
     "react": "^16.2.0",
-    "react-dom": "^16.2.0",
+    "react-dom": "^16.2.1",
     "react-highlight": "briancappello/react-highlight#react-v16-compiled",
     "react-router-dom": "^4.1.1",
     "sanitize-html": "^1.14.1",
