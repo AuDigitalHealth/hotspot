@@ -22,7 +22,8 @@
     "react-router-dom": "^4.1.1",
     "sanitize-html": "^1.14.1",
     "svgo": "^0.7.0",
-    "vkbeautify": "^0.99.2"
+    "vkbeautify": "^0.99.2",
+    "whatwg-fetch": "^3.0.0"
   },
   "scripts": {
     "start": "node scripts/start.js",
