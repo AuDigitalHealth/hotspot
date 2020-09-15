@@ -6,6 +6,7 @@
     "bunyan": "^1.8.12",
     "compression": "^1.7.2",
     "express": "^4.16.3",
+    "http-proxy": "1.18.1",
     "http-proxy-middleware": "^0.18.0",
     "mixin-deep": "^2.0.1",
     "set-value": "^0.4.3",
