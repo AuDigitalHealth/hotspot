@@ -5,7 +5,7 @@ COPY docker/proxy/* /
 COPY docker/start.sh /
 COPY docker/buildConfig.sh /
 
-RUN yarn
+RUN yarn install --force
 
 RUN chmod +x /start.sh /buildConfig.sh
 
