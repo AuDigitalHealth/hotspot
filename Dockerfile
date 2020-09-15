@@ -1,11 +1,11 @@
-FROM node
+FROM node:12-stretch
 ARG version
 
 COPY docker/proxy/* /
 COPY docker/start.sh /
 COPY docker/buildConfig.sh /
 
-RUN yarn install --verbose
+RUN yarn
 
 RUN chmod +x /start.sh /buildConfig.sh
 
